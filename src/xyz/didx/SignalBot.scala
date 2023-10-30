@@ -20,10 +20,10 @@ import sttp.client3.circe.*
 import sttp.model.*
 
 case class SignalConfig(
-    signalUrl: String,
-    signalUser: String,
-    signalPhone: String,
-    signalTimeout: Int = 5
+  signalUrl: String,
+  signalUser: String,
+  signalPhone: String,
+  signalTimeout: Int = 5
 ) derives ConfigReader:
   override def toString: String =
     s"SignalConfig(url: $signalUrl, user: $signalUser, phone: $signalPhone)"
@@ -52,12 +52,12 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
       c.code match
         case s: StatusCode if s.isSuccess =>
           Right(s"Signalbot register: $s")
-        case s: StatusCode =>
+        case s: StatusCode                =>
           Left(new Exception(s"Signalbot register: $s"))
     )
 
   def verify(pin: String): IO[Either[Exception, String]] =
-    val request = basicRequest
+    val request  = basicRequest
       .contentType("application/json")
       .body(s"""{"pin": $pin""")
       .post(uri"${signalConf.signalUrl}/verify/${signalConf.signalPhone}")
@@ -66,7 +66,7 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
       c.code match
         case s: StatusCode if s.isSuccess =>
           Right(s"Signalbot verify: $s")
-        case s: StatusCode =>
+        case s: StatusCode                =>
           Left(new Exception(s"Signalbot verify: $s"))
     )
 
@@ -81,7 +81,7 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
       c.code match
         case s: StatusCode if s.isSuccess =>
           Right(s"Signalbot Send: $s - Message sent")
-        case s: StatusCode =>
+        case s: StatusCode                =>
           Left(new Exception(s"Signalbot Send: $s"))
     )
 
@@ -98,7 +98,7 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
     val response = request.send(backend)
     response map (r =>
       r.body match
-        case Left(error) => Left(error)
+        case Left(error)     => Left(error)
         case Right(messages) =>
           messages
             .map(msg =>

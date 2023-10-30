@@ -4,10 +4,10 @@ import cats.effect.IO
 import io.circe.parser.*
 
 case class SignalSendMessage(
-    attachments: List[String],
-    message: String,
-    number: String,
-    recipients: List[String]
+  attachments: List[String],
+  message: String,
+  number: String,
+  recipients: List[String]
 ):
   override def toString(): String =
     s"""SignalSendMessage(
@@ -25,10 +25,10 @@ case class SignalMessage(val envelope: SignalEnvelope, account: String):
     )"""
 
 case class SignalSimpleMessage(
-    phone: String,
-    name: String,
-    text: String,
-    keywords: List[String] = List[String]()
+  phone: String,
+  name: String,
+  text: String,
+  keywords: List[String] = List[String]()
 ):
   override def toString(): String =
     s"""SignalSimpleMessage(

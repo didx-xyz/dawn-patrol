@@ -44,28 +44,28 @@ object SignalMessageCodec:
     new Decoder[SignalEnvelope]:
       def apply(c: HCursor): Result[SignalEnvelope] =
         for {
-          source       <- c.downField("source").as[String]
-          sourceNumber <- c.downField("sourceNumber").as[String]
-          sourceUuid   <- c.downField("sourceUuid").as[String]
-          sourceName   <- c.downField("sourceName").as[String]
-          sourceDevice <- c.downField("sourceDevice").as[Int]
-          timestamp    <- c.downField("timestamp").as[Long]
-          dataMessage =
+          source         <- c.downField("source").as[String]
+          sourceNumber   <- c.downField("sourceNumber").as[String]
+          sourceUuid     <- c.downField("sourceUuid").as[String]
+          sourceName     <- c.downField("sourceName").as[String]
+          sourceDevice   <- c.downField("sourceDevice").as[Int]
+          timestamp      <- c.downField("timestamp").as[Long]
+          dataMessage     =
             c.downField("dataMessage").focus match
               case Some(json) =>
                 json.as[SignalDataMessage] match
                   case Right(value) => Some(value)
                   case Left(error)  => None
-              case None => Option.empty[SignalDataMessage]
+              case None       => Option.empty[SignalDataMessage]
           receiptMessage <- c
-            .downField("receiptMessage")
-            .as[Option[SignalReceiptMessage]]
-          syncMessage <- c
-            .downField("syncMessage")
-            .as[Option[SignalSyncMessage]]
-          sentMessage <- c
-            .downField("sentMessage")
-            .as[Option[SignalSentMessage]]
+                              .downField("receiptMessage")
+                              .as[Option[SignalReceiptMessage]]
+          syncMessage    <- c
+                              .downField("syncMessage")
+                              .as[Option[SignalSyncMessage]]
+          sentMessage    <- c
+                              .downField("sentMessage")
+                              .as[Option[SignalSentMessage]]
         } yield SignalEnvelope(
           source,
           sourceNumber,
@@ -125,17 +125,17 @@ object SignalMessageCodec:
     new Decoder[SignalSyncMessage]:
       def apply(c: HCursor): Result[SignalSyncMessage] =
         for {
-          sentMessage <- c
-            .downField("sentMessage")
-            .as[Option[SignalSentMessage]]
+          sentMessage  <- c
+                            .downField("sentMessage")
+                            .as[Option[SignalSentMessage]]
           readMessages <- c
-            .downField("readMessages")
-            .as[Option[List[SignalReadMessage]]]
+                            .downField("readMessages")
+                            .as[Option[List[SignalReadMessage]]]
         } yield SignalSyncMessage(sentMessage, readMessages)
 
   given signalSentMessageDecoder: Decoder[SignalSentMessage] =
     new Decoder[SignalSentMessage]:
-      def apply(c: HCursor): Result[SignalSentMessage] = {
+      def apply(c: HCursor): Result[SignalSentMessage] =
         for
           destination       <- c.downField("destination").as[String]
           destinationNumber <- c.downField("destinationNumber").as[String]
@@ -155,7 +155,6 @@ object SignalMessageCodec:
           viewOnce,
           groupInfo
         )
-      }
 
   given signalReadMessageDecoder: Decoder[SignalReadMessage] =
     new Decoder[SignalReadMessage]:
