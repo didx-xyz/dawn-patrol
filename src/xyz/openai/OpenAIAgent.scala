@@ -20,15 +20,15 @@ case class APIConf(apiKey: String, orgId: String) derives ConfigReader:
     s"APIConf(key: ${apiKey.toString}, orgId: ${orgId.toString})"
 
 final case class OpenAIAgent(backend: SttpBackend[IO, Any])(using
-    logger: Logger[IO]
+  logger: Logger[IO]
 ):
   import OpenAIMessageCodec.openAIRequestEncoder
   import OpenAIMessageCodec.openAIResponseDecoder
 
-  private val client = SimpleHttpClient()
+  private val client                                       = SimpleHttpClient()
   def log[T](value: T)(using logger: Logger[IO]): IO[Unit] =
     logger.info(s"$value")
-  def getConf() =
+  def getConf()                                            =
     val apiConf: APIConf =
       ConfigSource.default.at("openai-conf").load[APIConf] match
         case Left(error) =>
@@ -40,11 +40,11 @@ final case class OpenAIAgent(backend: SttpBackend[IO, Any])(using
   val apiConf = getConf()
 
   def extractKeywords(
-      message: SignalSimpleMessage
+    message: SignalSimpleMessage
   ): EitherT[IO, ResponseException[String, Error], SignalSimpleMessage] =
     val openAIRequest =
       OpenAIRequest(prompt = s"Extract keywords from this text: ${message.text}").asJson.noSpaces
-    val request = basicRequest
+    val request       = basicRequest
       .contentType("application/json")
       .header(
         "Authorization",
@@ -62,7 +62,7 @@ final case class OpenAIAgent(backend: SttpBackend[IO, Any])(using
     ] = request.send(backend)
     EitherT(response.map { r =>
       r.body match
-        case Left(error) =>
+        case Left(error)           =>
           response.flatTap(t => logger.error(s"Error: $error"))
           Left(error)
         case Right(openAIResponse) =>

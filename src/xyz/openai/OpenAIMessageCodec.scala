@@ -24,11 +24,11 @@ object OpenAIMessageCodec {
     new Decoder[OpenAIResponseChoice] {
       def apply(c: HCursor): Result[OpenAIResponseChoice] =
         for
-          text  <- c.downField("text").as[String]
-          index <- c.downField("index").as[Int]
-          logprobs <- c
-            .downField("logprobs")
-            .as[Option[OpenAIResponseChoiceLogProbs]]
+          text         <- c.downField("text").as[String]
+          index        <- c.downField("index").as[Int]
+          logprobs     <- c
+                            .downField("logprobs")
+                            .as[Option[OpenAIResponseChoiceLogProbs]]
           finishReason <- c.downField("finish_reason").as[Option[String]]
         yield OpenAIResponseChoice(text, index, logprobs, finishReason)
     }
@@ -38,14 +38,14 @@ object OpenAIMessageCodec {
       def apply(c: HCursor): Result[OpenAIResponseChoiceLogProbs] =
         for
           tokenLogProbs <- c
-            .downField("token_logprobs")
-            .as[Option[Map[String, List[Double]]]]
-          textLogProbs <- c
-            .downField("text_logprobs")
-            .as[Option[Map[String, List[Double]]]]
-          textOffset <- c
-            .downField("text_offset")
-            .as[Option[Map[String, List[Double]]]]
+                             .downField("token_logprobs")
+                             .as[Option[Map[String, List[Double]]]]
+          textLogProbs  <- c
+                             .downField("text_logprobs")
+                             .as[Option[Map[String, List[Double]]]]
+          textOffset    <- c
+                             .downField("text_offset")
+                             .as[Option[Map[String, List[Double]]]]
         yield OpenAIResponseChoiceLogProbs(
           tokenLogProbs,
           textLogProbs,

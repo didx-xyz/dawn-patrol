@@ -17,4 +17,4 @@
 //> using dep com.softwaremill.sttp.client3::async-http-client-backend-cats:3.9.0
 //> using dep de.brendamour:jpasskit:0.3.3
 
-//> using dep org.slf4j:slf4j-nop:2.0.9 
+//> using dep org.slf4j:slf4j-nop:2.0.9
