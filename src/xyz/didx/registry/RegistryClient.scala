@@ -1,4 +1,4 @@
-package xyz.did.registry
+package xyz.didx.registry
 
 import cats.data.EitherT
 import cats.effect.IO
