@@ -13,4 +13,5 @@
 //> using dep com.softwaremill.sttp.client3::core:3.9.0
 //> using dep com.softwaremill.sttp.client3::circe:3.9.0
 //> using dep com.softwaremill.sttp.client3::async-http-client-backend-cats:3.9.0
-///> using dep com.apicatalog:iron-ed25519-cryptosuite-2020:0.8.1
+//> using dep de.brendamour:jpasskit:0.3.3
+

@@ -3,11 +3,11 @@ package xyz.didx.signal
 import cats.data.EitherT
 import cats.effect.IO
 import cats.implicits.*
-import xyz.didx.signal.messages.SignalMessage
-import xyz.didx.signal.messages.SignalMessageCodec.signalMessageDecoder
-import xyz.didx.signal.messages.SignalMessageCodec.signalSendMessage
-import xyz.didx.signal.messages.SignalSendMessage
-import xyz.didx.signal.messages.SignalSimpleMessage
+import xyz.didx.messages.SignalMessage
+import xyz.didx.messages.SignalMessageCodec.signalMessageDecoder
+import xyz.didx.messages.SignalMessageCodec.signalSendMessage
+import xyz.didx.messages.SignalSendMessage
+import xyz.didx.messages.SignalSimpleMessage
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.*

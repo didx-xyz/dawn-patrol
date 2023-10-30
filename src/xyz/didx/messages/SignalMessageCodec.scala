@@ -1,10 +1,10 @@
-package xyz.didx.signal.messages
+package xyz.didx.messages
 
 import cats.Applicative.ops.toAllApplicativeOps
 import cats.*
-import xyz.didx.signal.messages.Member
-import xyz.didx.signal.messages.SignalMessage
-import xyz.didx.signal.messages.SignalSendMessage
+import xyz.didx.messages.Member
+import xyz.didx.messages.SignalMessage
+import xyz.didx.messages.SignalSendMessage
 import io.circe.Decoder
 import io.circe.Decoder.Result
 import io.circe.Encoder

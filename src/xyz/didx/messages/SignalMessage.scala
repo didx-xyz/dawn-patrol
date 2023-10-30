@@ -1,4 +1,4 @@
-package xyz.didx.signal.messages
+package xyz.didx.messages
 
 import cats.effect.IO
 import io.circe.parser.*

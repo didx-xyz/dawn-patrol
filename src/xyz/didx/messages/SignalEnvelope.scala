@@ -1,4 +1,4 @@
-package xyz.didx.signal.messages
+package xyz.didx.messages
 
 case class SignalEnvelope(
   source: String,
