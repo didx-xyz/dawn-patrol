@@ -3,6 +3,8 @@
 //> using packaging.output "dawn-patrol"
 //> using nativeMode "release-fast"
 //> using resourceDir ./src/resources
+//> using mainClass xyz.didx.DawnPatrol
+////> using computeVersion git:tag
 
 //> using dep io.circe::circe-core:0.14.6
 //> using dep io.circe::circe-parser:0.14.6
