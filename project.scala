@@ -6,6 +6,8 @@
 //> using mainClass xyz.didx.DawnPatrol
 ////> using computeVersion git:tag
 
+//> using option -Xmax-inlines 50
+
 //> using dep io.circe::circe-core:0.14.6
 //> using dep io.circe::circe-parser:0.14.6
 //> using dep io.circe::circe-generic:0.14.6
