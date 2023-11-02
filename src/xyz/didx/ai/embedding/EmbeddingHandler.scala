@@ -84,7 +84,7 @@ object EmbeddingHandler {
           removeSpecialCharacters(s"""${opportunity.title} ${opportunity.description}""")
             .take(256)
 
-        scribe.info(s"Sample input: $opportunityEmbeddingInput")
+        scribe.debug(s"Sample embedding input: $opportunityEmbeddingInput")
 
         TextSegment.from(opportunityEmbeddingInput, metadata)
       }
