@@ -7,7 +7,12 @@ case class OnboardingResult(
   @Description("The next message that you want to send to the user") nextMessageToUser: String,
   @Description("The full name of the user") fullName: Option[String] = None,
   @Description("The email address of the user") email: Option[String] = None,
-  @Description("The cellphone number of the user") cellphone: Option[String] = None,
-  @Description("User has confirmed captured fields are correct") confirmed: Boolean = false
+  @Description("The cellphone number of the user") cellphone: Option[String] = None
+) derives SerialDescriptor,
+      Decoder
+
+case class ConfirmedOnboardingResult(
+  @Description("The next message that you want to send to the user") nextMessageToUser: String,
+  @Description("User has confirmed that the recorded data is correct") confirmed: Option[Boolean] = None
 ) derives SerialDescriptor,
       Decoder
