@@ -63,20 +63,34 @@ object AiHandler {
                 ) // todo: add amend data state
 
       case ChatState.QueryingOpportunities =>
-        val embeddingMatch: EmbeddingMatch[TextSegment] =
+        val embeddingMatchOpt: Option[EmbeddingMatch[TextSegment]] =
           EmbeddingHandler.findMostRelevantFromQuery(input)
 
-        val logResult =
-          s"From user request: $input\n" +
-            "Got embedding match with: " +
-            s"score = ${embeddingMatch.score()}, " +
-            s"embedded = ${embeddingMatch.embedded()}, " +
-            s"embeddingId = ${embeddingMatch.embeddingId()}"
+        embeddingMatchOpt match
+          case None                 => (
+              "Apologies, we couldn't find a relevant opportunity. Please try a different request!",
+              state
+            )
+          case Some(embeddingMatch) =>
+            val logResult =
+              s"From user request: $input\n" +
+                "Got embedding match with: " +
+                s"score = ${embeddingMatch.score()}, " +
+                s"embedded = ${embeddingMatch.embedded()}, " +
+                s"embeddingId = ${embeddingMatch.embeddingId()}"
 
-        scribe.info(logResult)
+            scribe.info(logResult)
 
-        val response = embeddingMatch.embedded().toString
-        (response, state)
+            val topMatch: TextSegment = embeddingMatch.embedded()
+            val id: String            = topMatch.metadata("id")
+            val title: String         = topMatch.metadata("title")
+            val organisation: String  = topMatch.metadata("organisationName")
+            val url: String           = s"https://app.yoma.world/opportunities/$id"
+
+            val response: String =
+              s"You might be interested in: $title, by $organisation. Here's a link to the opportunity page: $url"
+
+            (response, state)
       case ChatState.Done                  => ???
   }
 }
