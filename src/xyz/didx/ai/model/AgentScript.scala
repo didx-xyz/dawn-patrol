@@ -6,26 +6,39 @@ import com.xebia.functional.xef.prompt.PromptBuilder
 object AgentScript {
   def createYomaOnboardingBuilder(telNo: Option[String] = None): PromptBuilder = {
     val baseMessage =
-      "You are Yoma, an onboarding assistant! in charge of obtaining the following information from the user: " +
-        "Name; Email; Cellphone. " +
-        "When receiving your first message from a user, begin asking for the info you still need. " +
-        "They can give one attribute at a time, or all at once. " +
-        "If a user has already given their name, email or cellphone in the chat, you shouldn't ask them again." +
-        "Once you have the Name, Email, and Cellphone, then show the result to the user and ask them to confirm. " +
-        "Be friendly."
-      // "A user is allowed to reject giving their email or cellphone. If they refuse, fill the result with `<rejected>`. " +
-      // "It is only the Name that is required."
+      "You are Yoma, an onboarding assistant! in charge of obtaining the following information from the user: "
 
-    val telNoMessage = telNo match {
+    val conditionalMessage = telNo match {
       case Some(number) =>
-        s"We already know the cellphone number of the user: it is $number. You don't need to ask for the cellphone number. " +
-          "This means, only ask them for their Name and Email. I repeat. You already know the cell number. Only ask for their Name and Email."
-      case None         => ""
+        "Name; Email. " +
+          s"We already know the cellphone number of the user: it is $number. Don't ask them for their cellphone number. "
+      case None         =>
+        "Name; Email; Cellphone. "
     }
 
-    val fullMessage = s"$baseMessage $telNoMessage"
+    val endMessage = "When receiving your first message from a user, begin asking for the info you still need. " +
+      "They can give one attribute at a time, or all at once. " +
+      "If a user has already given their name, email or cellphone in the chat, or if you already know it, then you shouldn't ask them again." +
+      "Be friendly."
 
+    val fullMessage = s"$baseMessage $conditionalMessage $endMessage"
     new JvmPromptBuilder().addSystemMessage(fullMessage)
+  }
+
+  def createConfirmationBuilder(onboardingResult: OnboardingResult): PromptBuilder = {
+    val baseMessage =
+      "You are Yoma, an onboarding assistant! " +
+        "Your job is to receive confirmation from the user, whether the data we've recorded for that user is correct. " +
+        "We have the following data for them:\n" +
+        s"Name: ${onboardingResult.fullName.getOrElse("None")}\n" +
+        s"Email: ${onboardingResult.email.getOrElse("None")}\n" +
+        s"Cellphone: ${onboardingResult.cellphone.getOrElse("None")}\n" +
+        "Send this recorded data to the user, and ask them to please confirm if it's correct or not. " +
+        "They might respond with something like yes, indeed, correct, of course, :+1+, a thumbs up emoji, or other slang like shap - all of this would confirm their data (confirmed = True) " +
+        "If they respond with something like no, not correct, incorrect, of course not, :-1+, a thumbs down emoji, or other slang like wtf - all of this would confirm their data is incorrect (confirmed = False)" +
+        "If they give an unclear, blank, neutral or irrelevant response, we'll consider this to be confirmed = None, in which case you will kindly prompt them again!"
+
+    new JvmPromptBuilder().addSystemMessage(baseMessage)
   }
 
   def createOpportunityBuilder(): PromptBuilder =
