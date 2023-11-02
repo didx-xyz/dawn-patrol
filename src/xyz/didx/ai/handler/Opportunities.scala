@@ -13,10 +13,18 @@ import io.circe.parser.decode
 import io.circe.generic.auto._
 import xyz.didx.ai.model.Opportunity
 import io.circe
+import xyz.didx.ai.embedding.EmbeddingHandler
 
 object Opportunities {
 
   val backend = DefaultFutureBackend()
+
+  def fetchAndStoreOpportunities(): IO[Unit] =
+    for {
+      _    <- IO.pure(scribe.info(s"Fetching opportunities from Yoma API"))
+      opps <- Opportunities.fetchOpportunities()
+      _    <- IO.pure(scribe.info(s"Successfully fetched opportunities."))
+    } yield EmbeddingHandler.getAndStoreAll(opps)
 
   def fetchOpportunities(): IO[List[Opportunity]] = {
     val request = basicRequest

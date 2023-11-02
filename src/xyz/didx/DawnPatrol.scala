@@ -12,6 +12,7 @@ import scala.concurrent.duration.*
 import xyz.didx.ConversationPollingHandler
 import sttp.client3.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import sttp.client3.SttpBackend
+import xyz.didx.ai.handler.Opportunities
 object DawnPatrol extends IOApp.Simple:
   // override protected def blockedThreadDetectionEnabled = true
   given logger: Logger[IO]            = Slf4jLogger.getLogger[IO]
@@ -28,6 +29,7 @@ object DawnPatrol extends IOApp.Simple:
 
     val pollingWithLogging = pollingStream.compile.drain
     for {
+      _     <- Opportunities.fetchAndStoreOpportunities()
       fiber <- pollingWithLogging.start
       _     <- fiber.join
     } yield ()
