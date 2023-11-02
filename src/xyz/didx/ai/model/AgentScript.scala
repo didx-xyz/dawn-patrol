@@ -4,9 +4,9 @@ import com.xebia.functional.xef.prompt.JvmPromptBuilder
 import com.xebia.functional.xef.prompt.PromptBuilder
 
 object AgentScript {
-  def createOnboardingBuilder(telNo: Option[String] = None): PromptBuilder = {
+  def createYomaOnboardingBuilder(telNo: Option[String] = None): PromptBuilder = {
     val baseMessage =
-      "You are an onboarding assistant, in charge of obtaining the following information from the user: " +
+      "You are Yoma, an onboarding assistant! in charge of obtaining the following information from the user: " +
         "Name; Email; Cellphone. " +
         "When receiving your first message from a user, begin asking for the info you still need. " +
         "They can give one attribute at a time, or all at once. " +

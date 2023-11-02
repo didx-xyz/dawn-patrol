@@ -19,7 +19,7 @@ object OnboardingHandler {
     // Get the builder for this conversationId, or create a new one if it doesn't exist
     val builder = builders.getOrElseUpdate(
       conversationId,
-      AgentScript.createOnboardingBuilder(telNo)
+      AgentScript.createYomaOnboardingBuilder(telNo)
     )
 
     // Add the user message to the builder
