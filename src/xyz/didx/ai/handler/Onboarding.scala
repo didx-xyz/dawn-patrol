@@ -30,7 +30,7 @@ object OnboardingHandler {
       {
         val result = prompt[OnboardingResult](builder.build())
         scribe.info(f"We have the following onboarding result: $result")
-        result.nextMessageToUser
+        result
       },
       conversationId = Some(ConversationId(conversationId))
     )
