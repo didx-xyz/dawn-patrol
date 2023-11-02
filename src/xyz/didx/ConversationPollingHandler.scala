@@ -1,5 +1,6 @@
 package xyz.didx
 
+import scala.collection.mutable
 import io.circe._
 import io.circe.parser.*
 import io.circe.syntax.*
@@ -28,6 +29,8 @@ import xyz.didx.didcomm.ServiceEndpointNodes
 import xyz.didx.registry.RegistryClient
 import xyz.didx.openai.OpenAIAgent
 import xyz.didx.passkit.PasskitAgent
+import xyz.didx.ai.AiHandler
+import xyz.didx.ai.model.ChatState
 
 class ConversationPollingHandler(using logger: Logger[IO]):
   val appConf      = getConf(using logger)
@@ -38,6 +41,8 @@ class ConversationPollingHandler(using logger: Logger[IO]):
     registryConf.registrarUrl.toString(),
     registryConf.apiKey
   )
+
+  private val userStates: mutable.Map[String, ChatState] = mutable.Map()
 
   // val redisStorage: Resource[cats.effect.IO, RedisStorage] =
   //   RedisStorage.create(appConf.redisUrl.toString())
@@ -144,10 +149,26 @@ class ConversationPollingHandler(using logger: Logger[IO]):
     message: SignalSimpleMessage,
     signalBot: SignalBot
   ): EitherT[IO, Exception, String] =
+    val userPhone = message.phone
+
+    // Retrieve the current state of the user, defaulting to Onboarding if not present
+    val currentState = userStates.getOrElse(userPhone, ChatState.Onboarding)
+
+    val (response, nextState) = AiHandler.getAiResponse(
+      input = message.text,
+      conversationId = userPhone,
+      state = currentState,
+      telNo = Some(userPhone)
+    )
+
+    // Update the state map with the new state for this user
+    userStates.update(userPhone, nextState)
+
+    val signalMessage: SignalSimpleMessage = SignalSimpleMessage(userPhone, message.name, response)
+
     for {
-      keywords: SignalSimpleMessage <- openAIAgent.extractKeywords(message)
-      response: String              <- processKeywords(keywords, signalBot)
-    } yield response
+      sendResult: String <- processAndRespond(signalMessage, signalBot)
+    } yield sendResult
 
   private def processAndRespond(
     k: SignalSimpleMessage,
