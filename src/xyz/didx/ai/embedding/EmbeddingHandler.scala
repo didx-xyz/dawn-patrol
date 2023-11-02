@@ -98,18 +98,17 @@ object EmbeddingHandler {
     queryText: String,
     maxResults: Int = 1,
     minScore: Double = 0.7
-  ): EmbeddingMatch[TextSegment] = {
+  ): Option[EmbeddingMatch[TextSegment]] = {
     val queryEmbedding: Embedding                   = embeddingModel.embed(queryText.take(256))
     val relevant: List[EmbeddingMatch[TextSegment]] =
       embeddingStore.findRelevant(queryEmbedding, maxResults, minScore).asScala.toList
     val embeddingMatch                              = relevant.headOption
     embeddingMatch match
-      case None        =>
-        EmbeddingMatch(0.0, "na", Embedding(Array.emptyFloatArray), TextSegment.from("na"))
+      case None        => None
       case Some(value) =>
         scribe.info(s"Got embedding match with score: ${value.score()}")
         scribe.info(s"Got embedding match with text: ${value.embedded()}")
-        value
+        Some(value)
   }
 
   def cosineSimilarity(f1: Array[Float], f2: Array[Float]): Double = {
