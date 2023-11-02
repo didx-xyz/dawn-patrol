@@ -12,14 +12,14 @@ object OnboardingHandler {
   // Define a map from conversationId to JvmPromptBuilder
   private val builders: mutable.Map[String, PromptBuilder] = mutable.Map()
 
-  def getResponse(input: String, conversationId: String): String = {
+  def getResponse(input: String, conversationId: String, telNo: Option[String] = None): OnboardingResult = {
     scribe.info(
       s"Get OnboardingHandler response for message: $input, for conversationId: $conversationId"
     )
     // Get the builder for this conversationId, or create a new one if it doesn't exist
     val builder = builders.getOrElseUpdate(
       conversationId,
-      AgentScript.createOnboardingBuilder()
+      AgentScript.createOnboardingBuilder(telNo)
     )
 
     // Add the user message to the builder
