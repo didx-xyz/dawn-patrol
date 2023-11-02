@@ -47,13 +47,12 @@ class ConversationPollingHandler(using logger: Logger[IO]):
   ): IO[Either[Exception, List[String]]] =
     for {
       signalBot              <- IO.pure(SignalBot(backend))
-      openAIAgent            <- IO.pure(OpenAIAgent(backend))
       receivedMessagesEither <- signalBot
                                   .receive()
                                   .flatTap(receivedMessages => logNonEmptyList[SignalSimpleMessage](receivedMessages))
       responses              <- receivedMessagesEither match {
                                   case Right(messages) =>
-                                    processMessages(messages, signalBot, openAIAgent, backend)
+                                    processMessages(messages, signalBot, backend)
                                   case Left(exception) =>
                                     IO.pure(Left(exception): Either[Exception, List[String]])
                                 }
@@ -62,16 +61,15 @@ class ConversationPollingHandler(using logger: Logger[IO]):
   private def processMessages(
     messages: List[SignalSimpleMessage],
     signalBot: SignalBot,
-    openAIAgent: OpenAIAgent,
     backend: SttpBackend[IO, Any]
   ): IO[Either[Exception, List[String]]] = {
     val (adminMessages, userMessages) =
       messages.filter(_.text.nonEmpty).partition(_.text.toLowerCase.startsWith("@admin|add"))
 
     for {
-      _                <- processAdminMessages(adminMessages, signalBot, backend)
-      keywordResponses <- extractKeywordsFromUserMessages(userMessages, openAIAgent, signalBot)
-    } yield keywordResponses
+      _               <- processAdminMessages(adminMessages, signalBot, backend)
+      responseResults <- getResponsesFromUserMessages(userMessages, signalBot)
+    } yield responseResults
   }.value
 
   private def processAdminMessages(
@@ -136,16 +134,14 @@ class ConversationPollingHandler(using logger: Logger[IO]):
 
   } yield ()
 
-  private def extractKeywordsFromUserMessages(
+  private def getResponsesFromUserMessages(
     userMessages: List[SignalSimpleMessage],
-    openAIAgent: OpenAIAgent,
     signalBot: SignalBot
   ): EitherT[IO, Exception, List[String]] =
-    userMessages.traverse(extractKeywordsFromUserMessage(_, openAIAgent, signalBot))
+    userMessages.traverse(getResponseFromUserMessage(_, signalBot))
 
-  private def extractKeywordsFromUserMessage(
+  private def getResponseFromUserMessage(
     message: SignalSimpleMessage,
-    openAIAgent: OpenAIAgent,
     signalBot: SignalBot
   ): EitherT[IO, Exception, String] =
     for {
@@ -153,7 +149,7 @@ class ConversationPollingHandler(using logger: Logger[IO]):
       response: String              <- processKeywords(keywords, signalBot)
     } yield response
 
-  private def processKeywords(
+  private def processAndRespond(
     k: SignalSimpleMessage,
     signalBot: SignalBot
   ): EitherT[IO, Exception, String] =
@@ -166,7 +162,7 @@ class ConversationPollingHandler(using logger: Logger[IO]):
           signalBot.send(
             SignalSendMessage(
               List[String](),
-              s"I have extracted the following keywords: ${k.keywords.mkString(",")}",
+              k.text,
               signalConf.signalPhone,
               List(k.phone)
             )
