@@ -1,5 +1,6 @@
 package xyz.didx
 
+import scala.collection.mutable
 import io.circe._
 import io.circe.parser.*
 import io.circe.syntax.*
@@ -28,129 +29,164 @@ import xyz.didx.didcomm.ServiceEndpointNodes
 import xyz.didx.registry.RegistryClient
 import xyz.didx.openai.OpenAIAgent
 import xyz.didx.passkit.PasskitAgent
+import xyz.didx.ai.AiHandler
+import xyz.didx.ai.model.ChatState
 
 class ConversationPollingHandler(using logger: Logger[IO]):
-  val appConf        = getConf(using logger)
-  val registryConf   = getRegistryConf(using logger)
-  val signalConf     = getSignalConf(using logger)
+  val appConf      = getConf(using logger)
+  val registryConf = getRegistryConf(using logger)
+  val signalConf   = getSignalConf(using logger)
+
   val registryClient = RegistryClient(
     registryConf.registrarUrl.toString(),
     registryConf.apiKey
   )
 
-  val redisStorage: Resource[cats.effect.IO, RedisStorage] =
-    RedisStorage.create(appConf.redisUrl.toString())
+  private val userStates: mutable.Map[String, ChatState] = mutable.Map()
+
+  // val redisStorage: Resource[cats.effect.IO, RedisStorage] =
+  //   RedisStorage.create(appConf.redisUrl.toString())
 
   def converse(
-    backend: SttpBackend[cats.effect.IO, Any]
+    backend: SttpBackend[IO, Any]
   ): IO[Either[Exception, List[String]]] =
+    for {
+      signalBot              <- IO.pure(SignalBot(backend))
+      receivedMessagesEither <- signalBot
+                                  .receive()
+                                  .flatTap(receivedMessages => logNonEmptyList[SignalSimpleMessage](receivedMessages))
+      responses              <- receivedMessagesEither match {
+                                  case Right(messages) =>
+                                    processMessages(messages, signalBot, backend)
+                                  case Left(exception) =>
+                                    IO.pure(Left(exception): Either[Exception, List[String]])
+                                }
+    } yield responses
 
-    // def callServices(backend:  SttpBackend[cats.effect.IO, Any],redisStorage: Resource[cats.effect.IO, RedisStorage]): IO[Either[Exception, List[String]]] =
-    val signalBot   = SignalBot(backend)
-    val openAIAgent = OpenAIAgent(backend)
+  private def processMessages(
+    messages: List[SignalSimpleMessage],
+    signalBot: SignalBot,
+    backend: SttpBackend[IO, Any]
+  ): IO[Either[Exception, List[String]]] = {
+    val (adminMessages, userMessages) =
+      messages.filter(_.text.nonEmpty).partition(_.text.toLowerCase.startsWith("@admin|add"))
 
-    val message = EitherT {
-      signalBot.receive().flatTap(m => logNonEmptyList[SignalSimpleMessage](m))
-    }
+    for {
+      _               <- processAdminMessages(adminMessages, signalBot, backend)
+      responseResults <- getResponsesFromUserMessages(userMessages, signalBot)
+    } yield responseResults
+  }.value
 
-    def extractEmail(text: String): Option[String] =
-      val emailRegex =
-        "\\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}\\b".r
-      emailRegex.findFirstIn(text)
+  private def processAdminMessages(
+    adminMessages: List[SignalSimpleMessage],
+    signalBot: SignalBot,
+    backend: SttpBackend[IO, Any]
+  ): EitherT[IO, Exception, Unit] =
+    adminMessages.traverse_(processAdminMessage(_, signalBot, backend))
 
-    /*    def handleConversation(m: SignalSimpleMessage) = {
-        import dev.mn8.gleibnif.dawn.Aspects.*
-        redisStorage.use {redis =>
-          redis.getDidByPhoneNumber(m.phone) match
-            case Some(did:DID) =>
-              val conversation = ConversationAgent(did).extractIntent( m.text)
-              redis.writeToRedis(did.toString, Action, conversation)
-              signalBot.send(SignalSendMessage(List[String](), s"Conversation stored for $did", signalConf.signalPhone, List(m.phone)))
-            case None =>
-              signalBot.send(SignalSendMessage(List[String](), s"Conversation not found for $m", signalConf.signalPhone, List(m.phone)))
+  private def processAdminMessage(
+    message: SignalSimpleMessage,
+    signalBot: SignalBot,
+    backend: SttpBackend[IO, Any]
+  ) = for {
+    member <- EitherT.fromEither[IO] {
+                decode[Member](message.text.split("\\|")(2))
+                  .leftMap(err => new Exception(s"Failed to decode Member: ${err.getMessage}"))
+              }
 
-        }
+    doc = DIDDoc(
+            did = "",
+            controller = Some(s"${appConf.dawnControllerDID}"),
+            alsoKnownAs = Some(Set(s"tel:${member.number};name=${member.name}")),
+            services = Some(
+              Set(
+                Service(
+                  id = new URI("#dwn"),
+                  `type` = Set("DecentralizedWebNode"),
+                  serviceEndpoint = Set(
+                    ServiceEndpointNodes(
+                      nodes = appConf.dawnServiceUrls
+                    )
+                  )
+                )
+              )
+            )
+          )
 
+    reg      = RegistryRequest(doc)
+    document = reg.asJson.spaces2
 
+    did <- EitherT(
+             registryClient
+               .createDID(registryConf.didMethod, document, backend)
+               .map(_.leftMap(err => new Exception(s"Failed to create DID: ${err.getMessage}")))
+           )
 
+    pass <- PasskitAgent(member.name, did, appConf.dawnUrl).signPass()
 
-    } */
-    def processKeywords(
-      k: SignalSimpleMessage
-    ): EitherT[IO, Exception, String] =
-      EitherT(k match
-        case m: SignalSimpleMessage if m.text.toLowerCase().contains("https://maps.google.com") =>
-          ??? // openAIAgent.keywords(m.text.split("\\|")(2))
+    result <- EitherT(signalBot.send(
+                SignalSendMessage(
+                  attachments = List(
+                    s"data:application/vnd.apple.pkpass;filename=did.pkpass;base64,$pass"
+                  ),
+                  message = s"${member.name}, ${appConf.dawnWelcomeMessage}",
+                  number = signalConf.signalPhone,
+                  recipients = List[String](member.number)
+                )
+              ))
 
-        case _ =>
+    _ <- EitherT.liftF(logger.info(s"Sent badge with $did to : ${member.name}"))
+
+  } yield ()
+
+  private def getResponsesFromUserMessages(
+    userMessages: List[SignalSimpleMessage],
+    signalBot: SignalBot
+  ): EitherT[IO, Exception, List[String]] =
+    userMessages.traverse(getResponseFromUserMessage(_, signalBot))
+
+  private def getResponseFromUserMessage(
+    message: SignalSimpleMessage,
+    signalBot: SignalBot
+  ): EitherT[IO, Exception, String] =
+    val userPhone = message.phone
+
+    // Retrieve the current state of the user, defaulting to Onboarding if not present
+    val currentState = userStates.getOrElse(userPhone, ChatState.Onboarding)
+
+    val (response, nextState) = AiHandler.getAiResponse(
+      input = message.text,
+      conversationId = userPhone,
+      state = currentState,
+      telNo = Some(userPhone)
+    )
+
+    // Update the state map with the new state for this user
+    userStates.update(userPhone, nextState)
+
+    val signalMessage: SignalSimpleMessage = SignalSimpleMessage(userPhone, message.name, response)
+
+    for {
+      sendResult: String <- processAndRespond(signalMessage, signalBot)
+    } yield sendResult
+
+  private def processAndRespond(
+    k: SignalSimpleMessage,
+    signalBot: SignalBot
+  ): EitherT[IO, Exception, String] =
+    k match {
+      case m: SignalSimpleMessage if m.text.toLowerCase().contains("https://maps.google.com") =>
+        EitherT.fromEither[IO](Left(new Exception("Not implemented yet")))
+
+      case _ =>
+        EitherT(
           signalBot.send(
             SignalSendMessage(
               List[String](),
-              s"I have extracted the following keywords: ${k.keywords.mkString(",")}",
+              k.text,
               signalConf.signalPhone,
               List(k.phone)
             )
           )
-      )
-
-    (for
-      mt <- message.map(
-              _.filter(_.text.length > 0)
-                .partition(_.text.toLowerCase().startsWith("@admin|add"))
-            )
-
-      adminMsg                            <- mt._1
-                                               .map(m =>
-                                                 val member   =
-                                                   decode[Member](m.text.split("\\|")(2)).getOrElse(Member("", ""))
-                                                 val doc      = DIDDoc(
-                                                   did = "",
-                                                   controller = Some(s"${appConf.dawnControllerDID}"),
-                                                   alsoKnownAs = Some(Set(s"tel:${member.number}.};name=${member.name}")),
-                                                   services = Some(
-                                                     Set(
-                                                       Service(
-                                                         id = new URI("#dwn"),
-                                                         `type` = Set("DecentralizedWebNode"),
-                                                         serviceEndpoint = Set(
-                                                           ServiceEndpointNodes(
-                                                             nodes = appConf.dawnServiceUrls
-                                                           )
-                                                         )
-                                                       )
-                                                     )
-                                                   )
-                                                 )
-                                                 val reg      = RegistryRequest(doc)
-                                                 val document = reg.asJson.spaces2
-                                                 for
-                                                   did    <- EitherT( // (backend.use { b =>
-                                                               registryClient
-                                                                 .createDID(registryConf.didMethod, document, backend))
-                                                   member <- EitherT.fromEither(decode[Member](m.text.split("\\|")(2)))
-                                                   pass   <- PasskitAgent(member.name, did, appConf.dawnUrl).signPass()
-                                                   r      <- EitherT( // backend.use { b =>
-                                                               signalBot.send(
-                                                                 SignalSendMessage(
-                                                                   List[String](
-                                                                     s"data:application/vnd.apple.pkpass;filename=did.pkpass;base64,$pass"
-                                                                   ),
-                                                                   s"${member.name}, ${appConf.dawnWelcomeMessage}",
-                                                                   s"${signalConf.signalPhone}",
-                                                                   List[String](member.number)
-                                                                 )
-                                                               ))
-                                                   _      <- EitherT.liftF(
-                                                               logger.info(s"sent badge with $did to : ${member.name} ")
-                                                             )
-                                                 // })
-                                                 yield r
-                                               )
-                                               .sequence
-
-      keywords: List[SignalSimpleMessage] <- mt._2
-                                               .map((m: SignalSimpleMessage) => openAIAgent.extractKeywords(m))
-                                               .sequence
-      s: List[String]                     <-
-        keywords.traverse(processKeywords)
-    yield s).value
+        )
+    }
