@@ -24,10 +24,13 @@
 
 //> using dep com.outr::scribe:3.12.2
 //> using dep com.lihaoyi::upickle:3.1.3
-//> using dep dev.langchain4j:langchain4j:0.22.0
+//> using dep dev.langchain4j:langchain4j:0.23.0
+//> using dep dev.langchain4j:langchain4j-hugging-face:0.23.0
+
 //> using dep com.xebia::xef-scala:0.0.3
 //> using dep com.xebia:xef-pdf:0.0.3 //runtime
 //> using dep com.xebia:xef-reasoning-jvm:0.0.3
 //> using dep com.xebia:xef-openai:0.0.3 //runtime.pomonly
 
-//> using dep org.slf4j:slf4j-nop:2.0.9
+//> using dep ch.qos.logback:logback-classic:1.4.11
+//> using dep org.apache.logging.log4j:log4j-core:2.21.1

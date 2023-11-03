@@ -3,15 +3,16 @@ package xyz.didx.ai.embedding
 import scala.collection.JavaConverters._
 import dev.langchain4j.data.embedding.Embedding
 import dev.langchain4j.data.segment.TextSegment
-import dev.langchain4j.model.inprocess.{InProcessEmbeddingModel, InProcessEmbeddingModelType}
 import dev.langchain4j.store.embedding.{EmbeddingMatch, EmbeddingStore}
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore
+import dev.langchain4j.model.huggingface.HuggingFaceEmbeddingModel;
+
 import dev.langchain4j.model.embedding.EmbeddingModel
-import dev.langchain4j.model.huggingface.HuggingFaceEmbeddingModel
 import dev.langchain4j.data.segment.TextSegment
 import dev.langchain4j.data.document.Metadata
 import xyz.didx.ai.model.Opportunity
 import java.time.Duration
+import dev.langchain4j.model.output.Response
 
 object EmbeddingHandler {
   private val embeddingModel: EmbeddingModel = HuggingFaceEmbeddingModel
@@ -25,13 +26,13 @@ object EmbeddingHandler {
   private val embeddingStore: EmbeddingStore[TextSegment] =
     new InMemoryEmbeddingStore[TextSegment]()
 
-  def getEmbedding(input: String): Embedding =
+  def getEmbedding(input: String): Response[Embedding] =
     embeddingModel.embed(input.take(256))
 
-  def getEmbedding(input: TextSegment): Embedding =
+  def getEmbedding(input: TextSegment): Response[Embedding] =
     embeddingModel.embed(input)
 
-  def embedAll(inputList: java.util.List[TextSegment]): java.util.List[Embedding] =
+  def embedAll(inputList: java.util.List[TextSegment]): Response[java.util.List[Embedding]] =
     embeddingModel.embedAll(inputList)
 
   def storeEmbedding(embedding: Embedding): Unit = {
@@ -58,7 +59,7 @@ object EmbeddingHandler {
   }
 
   def getAndStoreEmbedding(input: String): Unit = {
-    val embedding = getEmbedding(input)
+    val embedding = getEmbedding(input).content()
     storeEmbedding(embedding, input)
   }
 
@@ -90,8 +91,8 @@ object EmbeddingHandler {
       }
       .asJava
 
-    val embeddings: java.util.List[Embedding] = embedAll(textSegments)
-    storeAllEmbeddings(embeddings, textSegments)
+    val embeddings = embedAll(textSegments)
+    storeAllEmbeddings(embeddings.content(), textSegments)
   }
 
   def findMostRelevantFromQuery(
@@ -99,10 +100,10 @@ object EmbeddingHandler {
     maxResults: Int = 1,
     minScore: Double = 0.7
   ): Option[EmbeddingMatch[TextSegment]] = {
-    val queryEmbedding: Embedding                   = embeddingModel.embed(queryText.take(256))
-    val relevant: List[EmbeddingMatch[TextSegment]] =
-      embeddingStore.findRelevant(queryEmbedding, maxResults, minScore).asScala.toList
-    val embeddingMatch                              = relevant.headOption
+    val queryEmbedding: Response[Embedding]                 = embeddingModel.embed(queryText.take(256))
+    val relevant: List[EmbeddingMatch[TextSegment]]         =
+      embeddingStore.findRelevant(queryEmbedding.content(), maxResults, minScore).asScala.toList
+    val embeddingMatch: Option[EmbeddingMatch[TextSegment]] = relevant.headOption
     embeddingMatch match
       case None        => None
       case Some(value) =>
