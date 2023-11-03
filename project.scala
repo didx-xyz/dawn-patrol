@@ -32,4 +32,5 @@
 //> using dep com.xebia:xef-reasoning-jvm:0.0.3
 //> using dep com.xebia:xef-openai:0.0.3 //runtime.pomonly
 
-//> using dep org.slf4j:slf4j-nop:2.0.9
+//> using dep ch.qos.logback:logback-classic:1.4.11
+//> using dep org.apache.logging.log4j:log4j-core:2.21.1
