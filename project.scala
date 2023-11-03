@@ -24,7 +24,9 @@
 
 //> using dep com.outr::scribe:3.12.2
 //> using dep com.lihaoyi::upickle:3.1.3
-//> using dep dev.langchain4j:langchain4j:0.22.0
+//> using dep dev.langchain4j:langchain4j:0.23.0
+//> using dep dev.langchain4j:langchain4j-hugging-face:0.23.0
+
 //> using dep com.xebia::xef-scala:0.0.3
 //> using dep com.xebia:xef-pdf:0.0.3 //runtime
 //> using dep com.xebia:xef-reasoning-jvm:0.0.3
