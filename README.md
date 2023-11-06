@@ -41,5 +41,5 @@ The messaging logic is defined in [DawnPatrol](src/xyz/didx/DawnPatrol.scala) an
 To create a docker container for DawnPatrol use:
 
 ```bash
-scala-cli --power package --docker . --docker-from ghcr.io/graalvm/jdk-community:21 --docker-image-repository dawn-patrol
+scala-cli --power package --native --docker . --docker-from ghcr.io/graalvm/jdk-community:21 --docker-image-repository dawn-patrol
 ```
