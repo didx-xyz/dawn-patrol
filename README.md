@@ -37,3 +37,9 @@ scala-cli run .
 Once running, the application will poll the Signal API, obtaining messages for the configured phone number (`signal-conf.signal-phone` in [application.conf](src/resources/application.conf)), and responding accordingly.
 
 The messaging logic is defined in [DawnPatrol](src/xyz/didx/DawnPatrol.scala) and [ConversationPollingHandler](src/xyz/didx/ConversationPollingHandler.scala)
+
+To create a docker container for DawnPatrol use:
+
+```bash
+scala-cli --power package --docker . --docker-from ghcr.io/graalvm/jdk-community:21 --docker-image-repository dawn-patrol
+```
