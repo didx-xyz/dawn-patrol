@@ -1,0 +1,92 @@
+name: CICD
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "master"
+    tags:
+      - "v*"
+  pull_request:
+    branches:
+      - "master"
+
+concurrency:
+  group: cicd-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io/${{ github.repository_owner }}
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: cicd-test-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: coursier/cache-action@v6
+      - uses: VirtusLab/scala-cli-setup@v1
+        with:
+          jvm: 21
+      - run: scala-cli fmt --check .
+      - run: scala-cli --power test .
+
+  build:
+    name: Build and push Docker
+    permissions:
+      packages: write
+    runs-on: ubuntu-latest
+
+    needs: test
+
+    concurrency:
+      group: cicd-build-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ github.token }}
+
+      - uses: coursier/cache-action@v6
+      - uses: VirtusLab/scala-cli-setup@v1
+        with:
+          jvm: 21
+      - run: mkdir ./target
+      - run: scala-cli --power package --standalone . --output ./target/dawn-patrol
+
+      - uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: ${{ env.REGISTRY }}/dawn-patrol
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=pr-${{ github.event.pull_request.number }}-,priority=601,enable=${{ github.event_name == 'pull_request' }}
+            type=sha,prefix={{branch}}-,priority=601,enable=${{ github.event_name == 'push' && github.ref_type == 'branch' }}
+            type=ref,event=branch,priority=600
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - uses: docker/build-push-action@v5
+        with:
+          platforms: linux/amd64,linux/arm64
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: |
+            type=gha,scope=build
+            type=registry,ref=${{ env.REGISTRY }}/dawn-patrol:latest
+          cache-to: type=gha,mode=max,scope=build
