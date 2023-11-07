@@ -34,3 +34,4 @@
 
 //> using dep ch.qos.logback:logback-classic:1.4.11
 //> using dep org.apache.logging.log4j:log4j-core:2.21.1
+//> using dep org.typelevel::log4cats-slf4j:2.6.0
