@@ -29,6 +29,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: coursier/cache-action@v6
       - uses: VirtusLab/scala-cli-setup@v1
         with:
           jvm: 21
@@ -57,6 +58,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ github.token }}
 
+      - uses: coursier/cache-action@v6
       - uses: VirtusLab/scala-cli-setup@v1
         with:
           jvm: 21
