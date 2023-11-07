@@ -70,6 +70,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/dawn-patrol
           tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
             type=sha,prefix=pr-${{ github.event.pull_request.number }}-,priority=601,enable=${{ github.event_name == 'pull_request' }}
             type=sha,prefix={{branch}}-,priority=601,enable=${{ github.event_name == 'push' && github.ref_type == 'branch' }}
             type=ref,event=branch,priority=600
