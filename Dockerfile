@@ -1,7 +1,11 @@
 FROM eclipse-temurin:21
 
+RUN adduser --system --group --uid 1000 --shell /bin/bash dawn
+
 WORKDIR /app
-COPY ./target/dawn-patrol ./dawn-patrol
+COPY --chown=0:0 ./target/dawn-patrol ./dawn-patrol
+
+USER dawn
 
 ENV HF_API_KEY=
 ENV OPENAI_TOKEN=
