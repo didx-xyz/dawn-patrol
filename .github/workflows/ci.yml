@@ -63,7 +63,7 @@ jobs:
         with:
           jvm: 21
       - run: mkdir ./target
-      - run: scala-cli --power package --standalone . -o ./target/dawn-patrol
+      - run: scala-cli --power package --standalone . --output ./target/dawn-patrol
 
       - uses: docker/metadata-action@v5
         id: meta
@@ -79,6 +79,7 @@ jobs:
 
       - uses: docker/build-push-action@v5
         with:
+          platforms: linux/amd64,linux/arm64
           context: .
           file: Dockerfile
           push: true
