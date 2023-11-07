@@ -1,0 +1,7 @@
+# Ignore everything
+**
+
+# Except the following
+!src/
+!test/
+!project.scala

@@ -1,0 +1,33 @@
+name: CICD
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "master"
+    tags:
+      - "v*"
+  pull_request:
+    branches:
+      - "master"
+
+concurrency:
+  group: cicd-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: cicd-test-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: VirtusLab/scala-cli-setup@v1
+        with:
+          jvm: 21
+      - run: scala-cli fmt --check .
+      - run: scala-cli --power test .
