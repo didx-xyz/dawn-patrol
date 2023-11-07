@@ -46,7 +46,11 @@ The messaging logic is defined in [DawnPatrol](src/xyz/didx/DawnPatrol.scala) an
 The easiest way to build a docker container for DawnPatrol is to use the `scala-cli`:
 
 ```bash
-scala-cli --power package --docker . --docker-from eclipse-temurin:21 --docker-image-repository dawn-patrol
+scala-cli --power \
+  package \
+  --docker . \
+  --docker-from eclipse-temurin:21 \
+  --docker-image-repository dawn-patrol
 ```
 
 To run our Docker image:
