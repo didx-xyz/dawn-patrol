@@ -143,12 +143,12 @@ class ConversationPollingHandler(using logger: Logger[IO]):
     userMessages: List[SignalSimpleMessage],
     signalBot: SignalBot
   ): EitherT[IO, Exception, List[String]] =
-    userMessages.traverse(getResponseFromUserMessage(_, signalBot))
+    userMessages.traverse(msg => EitherT(getResponseFromUserMessage(msg, signalBot)))
 
   private def getResponseFromUserMessage(
     message: SignalSimpleMessage,
     signalBot: SignalBot
-  ): EitherT[IO, Exception, String] =
+  ): IO[Either[Exception, String]] =
     val userPhone = message.phone
 
     // Retrieve the current state of the user, defaulting to Onboarding if not present
@@ -164,30 +164,16 @@ class ConversationPollingHandler(using logger: Logger[IO]):
                               )
       signalMessage         = SignalSimpleMessage(userPhone, message.name, response)
       _                    <- signalBot.stopTyping(userPhone)
-      sendResult: String   <- processAndRespond(signalMessage, signalBot)
+      sendResult           <- signalBot.send(
+                                SignalSendMessage(
+                                  List[String](),
+                                  message.text,
+                                  signalConf.signalPhone,
+                                  List(message.phone)
+                                )
+                              )
     } yield {
       // Update the state map with the new state for this user
       userStates.update(userPhone, nextState)
       sendResult
-    }
-
-  private def processAndRespond(
-    k: SignalSimpleMessage,
-    signalBot: SignalBot
-  ): EitherT[IO, Exception, String] =
-    k match {
-      case m: SignalSimpleMessage if m.text.toLowerCase().contains("https://maps.google.com") =>
-        EitherT.fromEither[IO](Left(new Exception("Not implemented yet")))
-
-      case _ =>
-        EitherT(
-          signalBot.send(
-            SignalSendMessage(
-              List[String](),
-              k.text,
-              signalConf.signalPhone,
-              List(k.phone)
-            )
-          )
-        )
     }
