@@ -154,21 +154,22 @@ class ConversationPollingHandler(using logger: Logger[IO]):
     // Retrieve the current state of the user, defaulting to Onboarding if not present
     val currentState = userStates.getOrElse(userPhone, ChatState.Onboarding)
 
-    val (response, nextState) = AiHandler.getAiResponse(
-      input = message.text,
-      conversationId = userPhone,
-      state = currentState,
-      telNo = Some(userPhone)
-    )
-
-    // Update the state map with the new state for this user
-    userStates.update(userPhone, nextState)
-
-    val signalMessage: SignalSimpleMessage = SignalSimpleMessage(userPhone, message.name, response)
-
     for {
-      sendResult: String <- processAndRespond(signalMessage, signalBot)
-    } yield sendResult
+      _                    <- signalBot.startTyping(userPhone)
+      (response, nextState) = AiHandler.getAiResponse(
+                                input = message.text,
+                                conversationId = userPhone,
+                                state = currentState,
+                                telNo = Some(userPhone)
+                              )
+      signalMessage         = SignalSimpleMessage(userPhone, message.name, response)
+      _                    <- signalBot.stopTyping(userPhone)
+      sendResult: String   <- processAndRespond(signalMessage, signalBot)
+    } yield {
+      // Update the state map with the new state for this user
+      userStates.update(userPhone, nextState)
+      sendResult
+    }
 
   private def processAndRespond(
     k: SignalSimpleMessage,
