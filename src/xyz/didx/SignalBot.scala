@@ -59,7 +59,7 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
   def verify(pin: String): IO[Either[Exception, String]] =
     val request  = basicRequest
       .contentType("application/json")
-      .body(s"""{"pin": $pin""")
+      .body(s"""{"pin": $pin}""")
       .post(uri"${signalConf.signalUrl}/verify/${signalConf.signalPhone}")
     val response = request.send(backend)
     response.map(c =>
