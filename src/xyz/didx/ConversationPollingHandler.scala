@@ -159,7 +159,7 @@ class ConversationPollingHandler(using logger: Logger[IO]):
     val currentState = userStates.getOrElse(userPhone, ChatState.Onboarding)
 
     (for {
-
+      _             <- EitherT(signalBot.startTyping(userPhone))
       responseState <- EitherT(AiHandler.getAiResponse(
                          input = message.text,
                          conversationId = userPhone,
@@ -167,6 +167,7 @@ class ConversationPollingHandler(using logger: Logger[IO]):
                          telNo = Some(userPhone)
                        ))
       signalMessage  = SignalSimpleMessage(userPhone, message.name, responseState._1)
+      _             <- EitherT(signalBot.stopTyping(userPhone))
       sendResult    <- EitherT(signalBot.send(
                          SignalSendMessage(
                            List[String](),
