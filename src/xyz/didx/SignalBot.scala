@@ -117,11 +117,10 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
     )
 
   def startTyping(userNumber: String): IO[
-    Either[Error, Unit]
+    Either[String, Unit]
   ] =
     val request = basicRequest
       .contentType("application/json")
-      .response(asJson[List[SignalMessage]])
       .body(s"""{"recipient": $userNumber}""")
       .put(
         uri"${signalConf.signalUrl}/v1/typing-indicator/${signalConf.signalPhone}"
@@ -130,16 +129,15 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
     val response = request.send(backend)
     response map (r =>
       r.body match
-        case Left(error) => Left(Error(error.getMessage()))
+        case Left(error) => Left(error)
         case Right(_)    => Right(IO.unit)
     )
 
   def stopTyping(userNumber: String): IO[
-    Either[Error, Unit]
+    Either[String, Unit]
   ] =
     val request = basicRequest
       .contentType("application/json")
-      .response(asJson[List[SignalMessage]])
       .body(s"""{"recipient": $userNumber}""")
       .delete(
         uri"${signalConf.signalUrl}/v1/typing-indicator/${signalConf.signalPhone}"
@@ -148,6 +146,6 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
     val response = request.send(backend)
     response map (r =>
       r.body match
-        case Left(error) => Left(Error(error.getMessage()))
+        case Left(error) => Left(error)
         case Right(_)    => Right(IO.unit)
     )
