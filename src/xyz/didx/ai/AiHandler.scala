@@ -68,7 +68,7 @@ object AiHandler {
                     "Let's amend your details. What data needs to be corrected?",
                     ChatState.Onboarding
                   )
-              // todo: add amend data state
+            // todo: add amend data state
         }.toEither.left.map(e => new Error(e.getMessage())))
 
       case ChatState.QueryingOpportunities =>

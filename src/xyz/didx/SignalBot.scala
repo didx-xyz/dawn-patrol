@@ -119,17 +119,14 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
   def startTyping(userNumber: String): IO[
     Either[Error, Unit]
   ] =
-    println(s"Start typing for user: $userNumber")
     val request = basicRequest
       .contentType("application/json")
       .body(s"""{"recipient": "$userNumber"}""")
       .put(
         uri"${signalConf.signalUrl}/v1/typing-indicator/${signalConf.signalPhone}"
       )
-    println(s"CURL: \n${request.toCurl}\n")
 
     val response = request.send(backend)
-    println(s"Response: $response")
     response map (r =>
       r.body match
         case Left(error) => Left(Error(error))
