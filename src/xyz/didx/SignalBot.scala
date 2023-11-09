@@ -8,7 +8,7 @@ import xyz.didx.messages.SignalMessageCodec.signalMessageDecoder
 import xyz.didx.messages.SignalMessageCodec.signalSendMessage
 import xyz.didx.messages.SignalSendMessage
 import xyz.didx.messages.SignalSimpleMessage
-import io.circe.*
+//import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.*
 import org.typelevel.log4cats.Logger
@@ -40,7 +40,7 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
 
   def init(): Unit = ()
 
-  def register(voiceMode: Boolean): IO[Either[Exception, String]] =
+  def register(voiceMode: Boolean): IO[Either[Error, String]] =
     val request = basicRequest
       .contentType("application/json")
       .body(s"""{"use_voice": $voiceMode}""")
@@ -53,13 +53,13 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
         case s: StatusCode if s.isSuccess =>
           Right(s"Signalbot register: $s")
         case s: StatusCode                =>
-          Left(new Exception(s"Signalbot register: $s"))
+          Left(Error(s"Signalbot register: $s"))
     )
 
-  def verify(pin: String): IO[Either[Exception, String]] =
+  def verify(pin: String): IO[Either[Error, String]] =
     val request  = basicRequest
       .contentType("application/json")
-      .body(s"""{"pin": $pin""")
+      .body(s"""{"pin": $pin}""")
       .post(uri"${signalConf.signalUrl}/verify/${signalConf.signalPhone}")
     val response = request.send(backend)
     response.map(c =>
@@ -67,10 +67,10 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
         case s: StatusCode if s.isSuccess =>
           Right(s"Signalbot verify: $s")
         case s: StatusCode                =>
-          Left(new Exception(s"Signalbot verify: $s"))
+          Left(Error(s"Signalbot verify: $s"))
     )
 
-  def send(message: SignalSendMessage): IO[Either[Exception, String]] =
+  def send(message: SignalSendMessage): IO[Either[Error, String]] =
     val request = basicRequest
       .contentType("application/json")
       .body(message.asJson.noSpaces)
@@ -82,11 +82,11 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
         case s: StatusCode if s.isSuccess =>
           Right(s"Signalbot Send: $s - Message sent")
         case s: StatusCode                =>
-          Left(new Exception(s"Signalbot Send: $s"))
+          Left(Error(s"Signalbot Send: $s"))
     )
 
   def receive(): IO[
-    Either[ResponseException[String, Error], List[SignalSimpleMessage]]
+    Either[Error, List[SignalSimpleMessage]]
   ] =
     val request = basicRequest
       .contentType("application/json")
@@ -98,7 +98,7 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
     val response = request.send(backend)
     response map (r =>
       r.body match
-        case Left(error)     => Left(error)
+        case Left(error)     => Left(Error(error.getMessage))
         case Right(messages) =>
           messages
             .map(msg =>
@@ -114,4 +114,38 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
             )
             .flatten
             .sequence
+    )
+
+  def startTyping(userNumber: String): IO[
+    Either[Error, Unit]
+  ] =
+    val request = basicRequest
+      .contentType("application/json")
+      .body(s"""{"recipient": "$userNumber"}""")
+      .put(
+        uri"${signalConf.signalUrl}/v1/typing-indicator/${signalConf.signalPhone}"
+      )
+
+    val response = request.send(backend)
+    response map (r =>
+      r.body match
+        case Left(error) => Left(Error(error))
+        case Right(_)    => Right(IO.unit)
+    )
+
+  def stopTyping(userNumber: String): IO[
+    Either[Error, Unit]
+  ] =
+    val request = basicRequest
+      .contentType("application/json")
+      .body(s"""{"recipient": "$userNumber"}""")
+      .delete(
+        uri"${signalConf.signalUrl}/v1/typing-indicator/${signalConf.signalPhone}"
+      )
+
+    val response = request.send(backend)
+    response map (r =>
+      r.body match
+        case Left(error) => Left(Error(error))
+        case Right(_)    => Right(IO.unit)
     )

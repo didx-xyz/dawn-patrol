@@ -17,9 +17,9 @@
 //> using dep dev.profunktor::redis4cats-log4cats:1.5.2
 
 //> using dep com.softwaremill.sttp.client4::core:4.0.0-M6
-//> using dep com.softwaremill.sttp.client3::core:3.9.0
-//> using dep com.softwaremill.sttp.client3::circe:3.9.0
-//> using dep com.softwaremill.sttp.client3::async-http-client-backend-cats:3.9.0
+//> using dep com.softwaremill.sttp.client3::core:3.9.1
+//> using dep com.softwaremill.sttp.client3::circe:3.9.1
+//> using dep com.softwaremill.sttp.client3::async-http-client-backend-cats:3.9.1
 //> using dep de.brendamour:jpasskit:0.3.3
 
 //> using dep com.outr::scribe:3.12.2

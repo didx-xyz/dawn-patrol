@@ -35,8 +35,15 @@ object DawnPatrol extends IOApp.Simple:
 
     val pollingWithLogging = pollingStream.compile.drain
     for {
-      _     <- Opportunities.fetchAndStoreOpportunities()
-      fiber <- pollingWithLogging.start
-      _     <- fiber.join
+      _       <- IO(println(s"Start polling at interval: $pollingInterval seconds"))
+      _       <- Opportunities.fetchAndStoreOpportunities()
+      attempt <- pollingWithLogging.attempt
+      _       <- attempt.fold(
+                   error => {
+                     logger.error(s"Error: $error")
+                     IO(println(s"Error: $error"))
+                   },
+                   _ => IO.unit
+                 )
     } yield ()
   }
