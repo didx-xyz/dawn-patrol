@@ -54,11 +54,14 @@ class ConversationPollingHandler(using logger: Logger[IO]):
       signalBot              <- IO.pure(SignalBot(backend))
       receivedMessagesEither <- signalBot
                                   .receive()
-                                  .flatTap(receivedMessages => logNonEmptyList[SignalSimpleMessage](receivedMessages))
+                                  .flatTap(receivedMessages =>
+                                    logNonEmptyList[SignalSimpleMessage](receivedMessages)
+                                  )
       responses              <- receivedMessagesEither match {
                                   case Right(messages) =>
                                     processMessages(messages, signalBot, backend)
                                   case Left(exception) =>
+                                    IO.println(s"Error: $exception")
                                     IO.pure(Left(Error(exception.getMessage())): Either[Error, List[String]])
                                 }
     } yield responses
@@ -72,7 +75,8 @@ class ConversationPollingHandler(using logger: Logger[IO]):
       messages.filter(_.text.nonEmpty).partition(_.text.toLowerCase.startsWith("@admin|add"))
 
     for {
-      _               <- EitherT(processAdminMessages(adminMessages, signalBot, backend))
+      _ <- EitherT(processAdminMessages(adminMessages, signalBot, backend))
+
       responseResults <- EitherT(getResponsesFromUserMessages(userMessages, signalBot))
     } yield responseResults
   }.value
@@ -88,7 +92,7 @@ class ConversationPollingHandler(using logger: Logger[IO]):
     message: SignalSimpleMessage,
     signalBot: SignalBot,
     backend: SttpBackend[IO, Any]
-  ): IO[ Either[Error, Unit]] =
+  ): IO[Either[Error, Unit]] =
     (for {
       member <- EitherT.fromEither[IO] {
                   decode[Member](message.text.split("\\|")(2))
@@ -118,10 +122,10 @@ class ConversationPollingHandler(using logger: Logger[IO]):
       document = reg.asJson.spaces2
 
       did <- EitherT(
-              registryClient
-                .createDID(registryConf.didMethod, document, backend)
-                .map(_.leftMap(err => Error(s"Failed to create DID: ${err.getMessage}")))
-            )
+               registryClient
+                 .createDID(registryConf.didMethod, document, backend)
+                 .map(_.leftMap(err => Error(s"Failed to create DID: ${err.getMessage}")))
+             )
 
       pass <- EitherT(PasskitAgent(member.name, did, appConf.dawnUrl).signPass())
 
@@ -150,30 +154,29 @@ class ConversationPollingHandler(using logger: Logger[IO]):
     message: SignalSimpleMessage,
     signalBot: SignalBot
   ): IO[Either[Error, String]] =
-    val userPhone = message.phone
-
+    val userPhone    = message.phone
     // Retrieve the current state of the user, defaulting to Onboarding if not present
     val currentState = userStates.getOrElse(userPhone, ChatState.Onboarding)
 
     (for {
-      _                    <- EitherT(signalBot.startTyping(userPhone))
+
       responseState <- EitherT(AiHandler.getAiResponse(
-                                input = message.text,
-                                conversationId = userPhone,
-                                state = currentState,
-                                telNo = Some(userPhone)
-                              ))
-     // signalMessage         = SignalSimpleMessage(userPhone, message.name, responseState._1)
-      _                    <- EitherT(signalBot.stopTyping(userPhone))
-      sendResult           <- EitherT(signalBot.send(
-                                SignalSendMessage(
-                                  List[String](),
-                                  signalMessage.text,
-                                  signalConf.signalPhone,
-                                  List(message.phone)
-                                )
-                              ))
+                         input = message.text,
+                         conversationId = userPhone,
+                         state = currentState,
+                         telNo = Some(userPhone)
+                       ))
+      signalMessage  = SignalSimpleMessage(userPhone, message.name, responseState._1)
+      sendResult    <- EitherT(signalBot.send(
+                         SignalSendMessage(
+                           List[String](),
+                           signalMessage.text,
+                           signalConf.signalPhone,
+                           List(message.phone)
+                         )
+                       ))
     } yield
       // Update the state map with the new state for this user
       userStates.update(userPhone, responseState._2)
-      sendResult).value
+      sendResult
+    ).value

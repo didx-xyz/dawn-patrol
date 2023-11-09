@@ -105,7 +105,9 @@ object EmbeddingHandler {
       embeddingStore.findRelevant(queryEmbedding.content(), maxResults, minScore).asScala.toList
     val embeddingMatch: Option[EmbeddingMatch[TextSegment]] = relevant.headOption
     embeddingMatch match
-      case None        => None
+      case None        =>
+        scribe.info("No matching opportunity found for query")
+        None
       case Some(value) =>
         scribe.info(s"Got embedding match with score: ${value.score()}")
         scribe.info(s"Got embedding match with text: ${value.embedded()}")

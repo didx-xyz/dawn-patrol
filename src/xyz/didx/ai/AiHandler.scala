@@ -20,15 +20,18 @@ object AiHandler {
     conversationId: String,
     state: ChatState = ChatState.Onboarding,
     telNo: Option[String] = None
-  ): IO[Either[Error,(String, ChatState)]] = {
+  ): IO[Either[Error, (String, ChatState)]] = {
     scribe.info(
+      s"Get AI response for message: $input, for conversationId: $conversationId, in state: $state"
+    )
+    println(
       s"Get AI response for message: $input, for conversationId: $conversationId, in state: $state"
     )
 
     state match
       case ChatState.Onboarding =>
         IO(Try {
-          val result: OnboardingResult = OnboardingHandler.getResponse(input, conversationId, telNo)
+          val result: OnboardingResult   = OnboardingHandler.getResponse(input, conversationId, telNo)
           val (messageToUser, nextState) = result match {
             case OnboardingResult(_, Some(fullName), Some(email), Some(cellphone)) =>
               // Results are records. Store in onboardingResults Map, and move to confirmation state
@@ -45,31 +48,28 @@ object AiHandler {
               (result.nextMessageToUser, state)
           }
           (messageToUser, nextState)
-        }.toEither.left.map(e => new Error(e.getMessage()))
-        )
+        }.toEither.left.map(e => new Error(e.getMessage())))
 
       case ChatState.ConfirmOnboardingResult =>
         IO(Try {
           val onboardingResultOpt = onboardingResults.get(conversationId)
           onboardingResultOpt match
-                  case None                   => ("Something went wrong retrieving recorded results. Let's try again!", ChatState.Onboarding)
-                  case Some(onboardingResult) =>
-                    val confirmationResult = ConfirmOnboardingHandler.getConfirmation(input, onboardingResult, conversationId)
-                    confirmationResult.confirmed match
-                      case None        => (confirmationResult.nextMessageToUser, state)
-                      case Some(true)  => (
-                          "Great, you are now ready to query the available Yoma opportunities! What would you like to do?",
-                          ChatState.QueryingOpportunities
-                        )
-                      case Some(false) =>
-                        (
-                          "Let's amend your details. What data needs to be corrected?",
-                          ChatState.Onboarding
-                        )
-                        // todo: add amend data state
-        }.toEither.left.map(e => new Error(e.getMessage()))
-        )
-
+            case None                   => ("Something went wrong retrieving recorded results. Let's try again!", ChatState.Onboarding)
+            case Some(onboardingResult) =>
+              val confirmationResult = ConfirmOnboardingHandler.getConfirmation(input, onboardingResult, conversationId)
+              confirmationResult.confirmed match
+                case None        => (confirmationResult.nextMessageToUser, state)
+                case Some(true)  => (
+                    "Great, you are now ready to query the available Yoma opportunities! What would you like to do?",
+                    ChatState.QueryingOpportunities
+                  )
+                case Some(false) =>
+                  (
+                    "Let's amend your details. What data needs to be corrected?",
+                    ChatState.Onboarding
+                  )
+              // todo: add amend data state
+        }.toEither.left.map(e => new Error(e.getMessage())))
 
       case ChatState.QueryingOpportunities =>
         IO(Try {
@@ -102,7 +102,7 @@ object AiHandler {
 
               (response, state)
         }.toEither.left.map(e => new Error(e.getMessage())))
-        
-      //case ChatState.Done                  => ???
+
+      case ChatState.Done => IO(Right(("Thank you for using DawnPatrol! Goodbye!", state)))
   }
 }
