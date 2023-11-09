@@ -43,6 +43,7 @@ Once running, the application will poll the Signal API, obtaining messages for t
 The messaging logic is defined in [DawnPatrol](src/xyz/didx/DawnPatrol.scala) and [ConversationPollingHandler](src/xyz/didx/ConversationPollingHandler.scala)
 
 ### Docker
+
 The easiest way to build a docker container for DawnPatrol is to use the `scala-cli`:
 
 ```bash
@@ -54,6 +55,7 @@ scala-cli --power \
 ```
 
 To run our Docker image:
+
 ```bash
 docker run -it --rm \
   -e HF_API_KEY='hf_key' \
