@@ -167,7 +167,6 @@ class ConversationPollingHandler(using logger: Logger[IO]):
                          telNo = Some(userPhone)
                        ))
       signalMessage  = SignalSimpleMessage(userPhone, message.name, responseState._1)
-      _             <- EitherT(signalBot.stopTyping(userPhone))
       sendResult    <- EitherT(signalBot.send(
                          SignalSendMessage(
                            List[String](),
@@ -176,6 +175,7 @@ class ConversationPollingHandler(using logger: Logger[IO]):
                            List(message.phone)
                          )
                        ))
+      _             <- EitherT(signalBot.stopTyping(userPhone))
     } yield
       // Update the state map with the new state for this user
       userStates.update(userPhone, responseState._2)
