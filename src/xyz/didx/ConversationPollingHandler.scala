@@ -168,7 +168,7 @@ class ConversationPollingHandler(using logger: Logger[IO]):
       sendResult           <- EitherT(signalBot.send(
                                 SignalSendMessage(
                                   List[String](),
-                                  message.text,
+                                  signalMessage.text,
                                   signalConf.signalPhone,
                                   List(message.phone)
                                 )
