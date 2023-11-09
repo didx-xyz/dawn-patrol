@@ -15,6 +15,7 @@ import java.net.URL
 import java.nio.charset.Charset
 import scala.jdk.CollectionConverters.*
 import org.typelevel.log4cats.Logger
+import scala.util.Try
 
 case class PasskitConfig(
   keystorePath: String,
@@ -50,8 +51,8 @@ final case class PasskitAgent(name: String, did: String, dawnURL: URL)(using
         case Right(conf) => conf
     passkitConf
 
-  def getPass: Either[Exception, PKPass] =
-    Right(
+  def getPass: Either[Error, PKPass] =
+    Try(
       PKPass
         .builder()
         .pass(
@@ -93,10 +94,10 @@ final case class PasskitAgent(name: String, did: String, dawnURL: URL)(using
 
         // ... and more initializations ...
         .build()
-    )
+    ).toEither.left.map(e => Error(e.getMessage()))
 
-  def signPass(): EitherT[IO, Exception, String] =
-    for
+  def signPass(): IO[Either[Error, String]] =
+    (for
       pass                <- EitherT(IO.delay(getPass))
       pkSigningInformation = new PKSigningInformationUtil()
                                .loadSigningInformationFromPKCS12AndIntermediateCertificate(
@@ -118,7 +119,7 @@ final case class PasskitAgent(name: String, did: String, dawnURL: URL)(using
                                )
                              )
       passBase64          <- EitherT.right(PasskitAgent.base64Encode(passBytes))
-    yield passBase64
+    yield passBase64).value
 
 object PasskitAgent:
   def base64Encode(bytes: Array[Byte]): IO[String]          =
@@ -143,35 +144,35 @@ object PasskitAgent:
     } yield (inStream, outStream)
 
   def transmit(
-    origin: InputStream,
-    destination: OutputStream,
-    buffer: Array[Byte],
-    acc: Long
-  ): IO[Long] =
-    for {
-      amount <- IO.blocking(origin.read(buffer, 0, buffer.size))
-      count  <-
-        if (amount > -1)
-          IO.blocking(destination.write(buffer, 0, amount)) >> transmit(
-            origin,
-            destination,
-            buffer,
-            acc + amount
-          )
-        else
-          IO.pure(
-            acc
-          ) // End of read stream reached (by java.io.InputStream contract), nothing to write
-    } yield count // Returns the actual amount of bytes transmitted // Returns the actual amount of bytes transmitted
+   origin: InputStream,
+   destination: OutputStream,
+   buffer: Array[Byte],
+   acc: Long
+   ): IO[Either[Error, Long]] = {
+   IO.blocking(origin.read(buffer, 0, buffer.size)).flatMap { amount =>
+     if (amount > -1) {
+       IO.blocking(destination.write(buffer, 0, amount)) >>
+         transmit(origin, destination, buffer, acc + amount)
+     } else {
+       IO.pure(Right(acc)) // End of read stream reached, return Right(acc)
+     }
+   }.handleErrorWith { error =>
+     IO.pure(Left(Error(error.getMessage()))) // Return Left(Error) in case of an error
+   }
+ }
 
-  def transfer(origin: InputStream, destination: OutputStream): IO[Long] =
-    transmit(origin, destination, new Array[Byte](1024 * 10), 0L)
 
-  def copy(origin: File, destination: File): IO[Long] =
-    inputOutputStreams(origin, destination).use { case (in, out) =>
+   // Returns the actual amount of bytes transmitted // Returns the actual amount of bytes transmitted
+
+  def transfer(origin: InputStream, destination: OutputStream): IO[Either[Error, Long]] =
+   transmit(origin, destination, new Array[Byte](1024 * 10), 0L)
+     .handleErrorWith(error => IO.pure(Left(Error(error.getMessage()))))
+
+  def copy(origin: File, destination: File): IO[Either[Error,Long]] =
+      inputOutputStreams(origin, destination).use { case (in, out) =>
       transfer(in, out)
     }
-  def write(f: File, data: Array[Byte]): IO[Long]     =
+  def write(f: File, data: Array[Byte]): IO[Either[Error,Long]]     =
     Resource.fromAutoCloseable(IO(new FileOutputStream(f))).use { out =>
-      IO.blocking(out.write(data)) >> IO.pure(data.length.toLong)
-    }
+    IO.blocking(out.write(data)) >> IO.pure(Right(data.length.toLong))
+}
