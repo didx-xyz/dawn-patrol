@@ -1,0 +1,17 @@
+apiVersion: v2
+name: dawn-patrol
+description: A Helm chart to deploy DawnPatrol on Kubernetes
+
+sources:
+  - https://github.com/didx-xyz/dawn-patrol
+
+type: application
+
+version: 0.1.0
+appVersion: latest
+
+dependencies:
+  # https://github.com/bitnami/charts/tree/main/bitnami/common
+  - name: common
+    version: 2.13.3
+    repository: oci://registry-1.docker.io/bitnamicharts

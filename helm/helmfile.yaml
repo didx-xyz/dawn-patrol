@@ -1,0 +1,42 @@
+environments:
+  dev:
+    values:
+      - namespace: dawn-dev
+        ddInjectEnabled: true
+        ddProfilingEnabled: false
+  prod:
+    values:
+      - namespace: dawn-prod
+        ddInjectEnabled: true
+        ddProfilingEnabled: false
+---
+repositories:
+- name: bitnami
+  url: oci://registry-1.docker.io/bitnamicharts
+  oci: true
+---
+releases:
+- name: dawn-patrol-client
+  namespace: {{ .Values.namespace }}
+  chart: ./dawn-patrol
+  values:
+    - ./dawn-patrol/conf/{{ .Environment.Name }}/values.yaml
+    - deploymentLabels:
+        tags.datadoghq.com/env: {{ .Environment.Name }}
+      podLabels:
+        tags.datadoghq.com/env: {{ .Environment.Name }}
+        admission.datadoghq.com/enabled: {{ quote .Values.ddInjectEnabled }}
+  set:
+    - name: extraEnv.DD_PROFILING_ENABLED
+      value: {{ .Values.ddProfilingEnabled }}
+    - name: secretEnv.HF_API_KEY
+      value: ""
+    - name: secretEnv.OPENAI_TOKEN
+      value: ""
+---
+helmDefaults:
+  timeout: 300
+  wait: true
+  atomic: true
+  cleanupOnFail: true
+  createNamespace: false

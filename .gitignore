@@ -30,8 +30,12 @@ project/project
 .config
 DID_Me
 
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode
+# Created by https://www.toptal.com/developers/gitignore/api/helm,visualstudiocode
+# Edit at https://www.toptal.com/developers/gitignore?templates=helm,visualstudiocode
+
+### Helm ###
+# Chart dependencies
+**/charts/*.tgz
 
 ### VisualStudioCode ###
 .vscode/*
@@ -52,4 +56,4 @@ DID_Me
 .history
 .ionide
 
-# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode
+# End of https://www.toptal.com/developers/gitignore/api/helm,visualstudiocode
