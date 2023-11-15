@@ -16,27 +16,21 @@ object AgentScript {
         "Name; Email; Cellphone. "
     }
 
-    val endMessage = "When receiving your first message from a user, begin asking for the info you still need. " +
-      "They can give one attribute at a time, or all at once. " +
-      "If a user has already given their name, email or cellphone in the chat, or if you already know it, then you shouldn't ask them again." +
-      "Be friendly."
+    val endMessage = "Prompt the user until you have the required info. " +
+      "If a user has already given their name, email or cellphone in the chat, then you shouldn't ask them again. " +
+      "Be friendly. When receiving a first message from a user, ask for the info you still need."
 
     val fullMessage = s"$baseMessage $conditionalMessage $endMessage"
     new JvmPromptBuilder().addSystemMessage(fullMessage)
   }
 
-  def createConfirmationBuilder(onboardingResult: OnboardingResult): PromptBuilder = {
+  def createConfirmationBuilder(): PromptBuilder = {
     val baseMessage =
-      "You are Yoma, an onboarding assistant! " +
-        "Your job is to receive confirmation from the user, whether the data we've recorded for that user is correct. " +
-        "We have the following data for them:\n" +
-        s"Name: ${onboardingResult.fullName.getOrElse("None")}\n" +
-        s"Email: ${onboardingResult.email.getOrElse("None")}\n" +
-        s"Cellphone: ${onboardingResult.cellphone.getOrElse("None")}\n" +
-        "Send this recorded data to the user, and ask them to please confirm if it's correct or not. " +
-        "They might respond with something like yes, indeed, correct, of course, :+1+, a thumbs up emoji, or other slang like shap - all of this would confirm their data (confirmed = True) " +
-        "If they respond with something like no, not correct, incorrect, of course not, :-1+, a thumbs down emoji, or other slang like wtf - all of this would confirm their data is incorrect (confirmed = False)" +
-        "If they give an unclear, blank, neutral or irrelevant response, we'll consider this to be confirmed = None, in which case you will kindly prompt them again!"
+      "Your job is to receive confirmation from the user - whether the data we've recorded is correct or not. " +
+        "They might respond with: yes, indeed, correct, of course, :+1+, a thumbs up emoji, slang like shap, or other general confirmation - all of this would confirm their data (confirmed = True). " +
+        "If they respond with: no, not correct, incorrect, of course not, :-1+, a thumbs down emoji, slang like wtf, or other general rejection - all of this would confirm their data is incorrect (confirmed = False). " +
+        "If they give an unclear, blank, neutral or irrelevant response, we'll consider this to be confirmed = None. " +
+        "Process their response and provide us with an Optional[Boolean]. confirmed = True, False, or None. "
 
     new JvmPromptBuilder().addSystemMessage(baseMessage)
   }

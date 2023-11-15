@@ -32,19 +32,25 @@ object AiHandler {
       case ChatState.Onboarding =>
         IO(Try {
           val result: OnboardingResult   = OnboardingHandler.getResponse(input, conversationId, telNo)
+          scribe.info(
+            s"Got response from OnboardingHandler::getResponse, for conversationId: $conversationId"
+          )
           val (messageToUser, nextState) = result match {
             case OnboardingResult(_, Some(fullName), Some(email), Some(cellphone)) =>
-              // Results are records. Store in onboardingResults Map, and move to confirmation state
-              onboardingResults.update(conversationId, result)
+              scribe.info(
+                s"Recorded onboarding result for conversationId: $conversationId"
+              )
 
-              val response = "Thank you. Please confirm if the following recorded data is correct:\n\n" +
-                s"Name: ${result.fullName.getOrElse("None")}\n" +
-                s"Email: ${result.email.getOrElse("None")}\n" +
-                s"Cellphone: ${result.cellphone.getOrElse("None")}"
+              onboardingResults.update(conversationId, result) // Store in onboardingResults Map
 
-              (response, ChatState.ConfirmOnboardingResult)
+              val response = ConfirmOnboardingHandler.getConfirmationMessage(result)
 
-            case OnboardingResult(_, _, _, _) => // In case data is not yet fully captured, remain in same state
+              (response, ChatState.ConfirmOnboardingResult) // move to confirmation state
+
+            case OnboardingResult(_, _, _, _) =>
+              scribe.info(
+                s"Data is not yet fully captured, remain in same state for conversationId: $conversationId"
+              )
               (result.nextMessageToUser, state)
           }
           (messageToUser, nextState)
@@ -56,9 +62,12 @@ object AiHandler {
           onboardingResultOpt match
             case None                   => ("Something went wrong retrieving recorded results. Let's try again!", ChatState.Onboarding)
             case Some(onboardingResult) =>
-              val confirmationResult = ConfirmOnboardingHandler.getConfirmation(input, onboardingResult, conversationId)
-              confirmationResult.confirmed match
-                case None        => (confirmationResult.nextMessageToUser, state)
+              val confirmationResult = ConfirmOnboardingHandler.getConfirmation(input, conversationId)
+              confirmationResult.userHasConfirmedOptionalBool match
+                case None        => (
+                    ConfirmOnboardingHandler.getReconfirmationMessage(onboardingResult),
+                    ChatState.ConfirmOnboardingResult
+                  )
                 case Some(true)  => (
                     "Great, you are now ready to query the available Yoma opportunities! What would you like to do?",
                     ChatState.QueryingOpportunities
