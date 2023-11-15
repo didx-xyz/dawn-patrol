@@ -8,6 +8,7 @@ import xyz.didx.messages.SignalMessageCodec.signalMessageDecoder
 import xyz.didx.messages.SignalMessageCodec.signalSendMessage
 import xyz.didx.messages.SignalSendMessage
 import xyz.didx.messages.SignalSimpleMessage
+import fs2.Stream
 //import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.*
@@ -18,6 +19,9 @@ import pureconfig.generic.derivation.default.*
 import sttp.client3.*
 import sttp.client3.circe.*
 import sttp.model.*
+import scala.concurrent.duration._
+import cats.effect.Ref
+import cats.effect.FiberIO
 
 case class SignalConfig(
   signalUrl: String,
@@ -117,7 +121,25 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
             .sequence
     )
 
-  def startTyping(userNumber: String): IO[
+  private def typingIndicatorTask(userNumber: String): fs2.Stream[IO, Unit] =
+    // The typing indicator times out after ~15 seconds, so we will continue sending the typing indicator until complete
+    Stream.eval(sendTypingIndicator(userNumber).void) ++                                   // Send typing indicator immediately
+      Stream.awakeEvery[IO](10.seconds).evalMap(_ => sendTypingIndicator(userNumber).void) // And then every 10 seconds
+
+  def startTyping(userNumber: String, taskRef: Ref[IO, Option[FiberIO[Unit]]]): IO[Unit] =
+    taskRef.get.flatMap {
+      case Some(fiber) => fiber.cancel
+      case None        => IO.unit
+    } *> typingIndicatorTask(userNumber).compile.drain.start.flatMap(fiber => taskRef.set(Some(fiber)))
+
+  def stopTyping(userNumber: String, taskRef: Ref[IO, Option[FiberIO[Unit]]]): IO[Unit] =
+    taskRef.get.flatMap {
+      case Some(fiber) =>
+        fiber.cancel *> sendStopTypingIndicator(userNumber).void
+      case None        => IO.unit
+    }
+
+  def sendTypingIndicator(userNumber: String): IO[
     Either[Error, Unit]
   ] =
     val request = basicRequest
@@ -135,7 +157,7 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
         case Right(_)    => Right(IO.unit)
     )
 
-  def stopTyping(userNumber: String): IO[
+  def sendStopTypingIndicator(userNumber: String): IO[
     Either[Error, Unit]
   ] =
     val request = basicRequest
