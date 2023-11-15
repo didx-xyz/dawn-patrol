@@ -77,6 +77,7 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
       .post(uri"${signalConf.signalUrl}/v2/send")
 
     val response = request.send(backend)
+    scribe.info(s"Sent message: $message")
     response.map(c =>
       c.code match
         case s: StatusCode if s.isSuccess =>
@@ -127,6 +128,7 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
       )
 
     val response = request.send(backend)
+    scribe.debug(s"Send start typing indicator for $userNumber")
     response map (r =>
       r.body match
         case Left(error) => Left(Error(error))
@@ -144,6 +146,7 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
       )
 
     val response = request.send(backend)
+    scribe.debug(s"Send stop typing indicator for $userNumber")
     response map (r =>
       r.body match
         case Left(error) => Left(Error(error))
