@@ -12,8 +12,9 @@ case class OnboardingResult(
       Decoder
 
 case class ConfirmedOnboardingResult(
-  @Description("Optional[Boolean] whether user has confirmed or not") userHasConfirmedOptionalBool: Option[
-    Boolean
-  ] = None
+  @Description("The next message that you want to send to the user") nextMessageToUser: String,
+  @Description(
+    "True, False, or None, to indicate whether user has confirmed or not"
+  ) userHasConfirmedOptionalBool: Option[Boolean] = None
 ) derives SerialDescriptor,
       Decoder
