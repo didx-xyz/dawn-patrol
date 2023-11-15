@@ -101,7 +101,9 @@ object EmbeddingHandler {
     maxResults: Int = 1,
     minScore: Double = 0.7
   ): Option[EmbeddingMatch[TextSegment]] = {
-    val queryEmbedding: Response[Embedding]                 = embeddingModel.embed(queryText.take(256))
+    val queryEmbedding: Response[Embedding] = embeddingModel.embed(queryText.take(256))
+
+    scribe.info(s"Finding most relevant embedding from query: $queryText")
     val relevant: List[EmbeddingMatch[TextSegment]]         =
       embeddingStore.findRelevant(queryEmbedding.content(), maxResults, minScore).asScala.toList
     val embeddingMatch: Option[EmbeddingMatch[TextSegment]] = relevant.headOption
