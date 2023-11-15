@@ -32,16 +32,25 @@ object AiHandler {
       case ChatState.Onboarding =>
         IO(Try {
           val result: OnboardingResult   = OnboardingHandler.getResponse(input, conversationId, telNo)
+          scribe.info(
+            s"Got response from OnboardingHandler::getResponse, for conversationId: $conversationId"
+          )
           val (messageToUser, nextState) = result match {
             case OnboardingResult(_, Some(fullName), Some(email), Some(cellphone)) =>
-              // Results are records. Store in onboardingResults Map, and move to confirmation state
-              onboardingResults.update(conversationId, result)
+              scribe.info(
+                s"Recorded onboarding result for conversationId: $conversationId"
+              )
+
+              onboardingResults.update(conversationId, result) // Store in onboardingResults Map
 
               val response = ConfirmOnboardingHandler.getConfirmationMessage(result)
 
-              (response, ChatState.ConfirmOnboardingResult)
+              (response, ChatState.ConfirmOnboardingResult) // move to confirmation state
 
-            case OnboardingResult(_, _, _, _) => // In case data is not yet fully captured, remain in same state
+            case OnboardingResult(_, _, _, _) =>
+              scribe.info(
+                s"Data is not yet fully captured, remain in same state for conversationId: $conversationId"
+              )
               (result.nextMessageToUser, state)
           }
           (messageToUser, nextState)

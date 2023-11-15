@@ -29,8 +29,8 @@ object AgentScript {
       "Your job is to receive confirmation from the user - whether the data we've recorded is correct or not. " +
         "They might respond with: yes, indeed, correct, of course, :+1+, a thumbs up emoji, slang like shap, or other general confirmation - all of this would confirm their data (confirmed = True). " +
         "If they respond with: no, not correct, incorrect, of course not, :-1+, a thumbs down emoji, slang like wtf, or other general rejection - all of this would confirm their data is incorrect (confirmed = False). " +
-        "If they give an unclear, blank, neutral or irrelevant response, we'll consider this to be confirmed = None, in which case we will prompt them again. " +
-        "Please process their response to establish if confirmed = True, False, or None. "
+        "If they give an unclear, blank, neutral or irrelevant response, we'll consider this to be confirmed = None. " +
+        "Process their response and provide us with an Optional[Boolean]. confirmed = True, False, or None. "
 
     new JvmPromptBuilder().addSystemMessage(baseMessage)
   }
