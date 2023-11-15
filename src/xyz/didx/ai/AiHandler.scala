@@ -82,40 +82,47 @@ object AiHandler {
 
       case ChatState.QueryingOpportunities =>
         IO(Try {
-          val embeddingMatchOpt: Option[EmbeddingMatch[TextSegment]] =
-            EmbeddingHandler.findMostRelevantFromQuery(input)
-
-          embeddingMatchOpt match
-            case None                 => (
-                "Apologies, we couldn't find a relevant opportunity. Please try a different request!",
-                state
+          input.toLowerCase.contains("onboard") match
+            case true  => // provide a way to switch back to onboarding, out from querying opportunities
+              (
+                OnboardingHandler.getResponse(input, conversationId, telNo, cleanSlate = true).nextMessageToUser,
+                ChatState.Onboarding
               )
-            case Some(embeddingMatch) =>
-              val logResult =
-                s"From user request: $input\n" +
-                  "Got embedding match with: " +
-                  s"score = ${embeddingMatch.score()}, " +
-                  s"embedded = ${embeddingMatch.embedded()}, " +
-                  s"embeddingId = ${embeddingMatch.embeddingId()}"
+            case false => // otherwise, query opportunities as usual:
+              val embeddingMatchOpt: Option[EmbeddingMatch[TextSegment]] =
+                EmbeddingHandler.findMostRelevantFromQuery(input)
 
-              scribe.info(logResult)
+              embeddingMatchOpt match
+                case None                 => (
+                    "Apologies, we couldn't find a relevant opportunity. Please try a different request!",
+                    state
+                  )
+                case Some(embeddingMatch) =>
+                  val logResult =
+                    s"From user request: $input\n" +
+                      "Got embedding match with: " +
+                      s"score = ${embeddingMatch.score()}, " +
+                      s"embedded = ${embeddingMatch.embedded()}, " +
+                      s"embeddingId = ${embeddingMatch.embeddingId()}"
 
-              val topMatch: TextSegment  = embeddingMatch.embedded()
-              val id: String             = topMatch.metadata("id")
-              val title: String          = topMatch.metadata("title")
-              val organisation: String   = topMatch.metadata("organisationName")
-              val opportunityUrl: String = topMatch.metadata("opportunityURL")
+                  scribe.info(logResult)
 
-              val backupUrl: String = s"https://app.yoma.world/opportunities/$id"
+                  val topMatch: TextSegment  = embeddingMatch.embedded()
+                  val id: String             = topMatch.metadata("id")
+                  val title: String          = topMatch.metadata("title")
+                  val organisation: String   = topMatch.metadata("organisationName")
+                  val opportunityUrl: String = topMatch.metadata("opportunityURL")
 
-              val url = opportunityUrl match
-                case null | "null" | "" => backupUrl // handle potential edge cases
-                case _                  => opportunityUrl
+                  val backupUrl: String = s"https://app.yoma.world/opportunities/$id"
 
-              val response: String =
-                s"You might be interested in: $title, by $organisation. Here's a link to the opportunity page: $url"
+                  val url = opportunityUrl match
+                    case null | "null" | "" => backupUrl // handle potential edge cases
+                    case _                  => opportunityUrl
 
-              (response, state)
+                  val response: String =
+                    s"You might be interested in: $title, by $organisation. Here's a link to the opportunity page: $url"
+
+                  (response, state)
         }.toEither.left.map(e => new Error(e.getMessage())))
 
       case ChatState.Done => IO(Right(("Thank you for using DawnPatrol! Goodbye!", state)))

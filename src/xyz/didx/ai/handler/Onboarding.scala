@@ -12,15 +12,25 @@ object OnboardingHandler {
   // Define a map from conversationId to JvmPromptBuilder
   private val builders: mutable.Map[String, PromptBuilder] = mutable.Map()
 
-  def getResponse(input: String, conversationId: String, telNo: Option[String] = None): OnboardingResult = {
+  def getResponse(
+    input: String,
+    conversationId: String,
+    telNo: Option[String] = None,
+    cleanSlate: Boolean = false
+  ): OnboardingResult = {
     scribe.info(
       s"Get OnboardingHandler response for message: $input, for conversationId: $conversationId"
     )
-    // Get the builder for this conversationId, or create a new one if it doesn't exist
-    val builder = builders.getOrElseUpdate(
-      conversationId,
-      AgentScript.createYomaOnboardingBuilder(telNo)
-    )
+
+    val defaultPromptBuilder   = AgentScript.createYomaOnboardingBuilder(telNo)
+    val builder: PromptBuilder = cleanSlate match
+      case true  =>
+        // We want to restart the onboarding on a clean slate, so update builders and use default
+        builders.update(conversationId, defaultPromptBuilder)
+        defaultPromptBuilder
+      case false =>
+        // Get the builder for this conversationId, or create a new one if it doesn't exist
+        builders.getOrElseUpdate(conversationId, defaultPromptBuilder)
 
     // Add the user message to the builder
     builder.addUserMessage(input)
