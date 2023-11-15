@@ -31,6 +31,8 @@ import xyz.didx.openai.OpenAIAgent
 import xyz.didx.passkit.PasskitAgent
 import xyz.didx.ai.AiHandler
 import xyz.didx.ai.model.ChatState
+import cats.effect.Ref
+import cats.effect.FiberIO
 
 class ConversationPollingHandler(using logger: Logger[IO]):
   val appConf      = getConf(using logger)
@@ -159,7 +161,9 @@ class ConversationPollingHandler(using logger: Logger[IO]):
     val currentState = userStates.getOrElse(userPhone, ChatState.Onboarding)
 
     (for {
-      _             <- EitherT(signalBot.startTyping(userPhone))
+      taskRef       <- // reference for start/stop typing indicator job
+        EitherT.right[Error](Ref.of[IO, Option[FiberIO[Unit]]](None))
+      _             <- EitherT.right[Error](signalBot.startTyping(userPhone, taskRef))
       responseState <- EitherT(AiHandler.getAiResponse(
                          input = message.text,
                          conversationId = userPhone,
@@ -167,6 +171,7 @@ class ConversationPollingHandler(using logger: Logger[IO]):
                          telNo = Some(userPhone)
                        ))
       signalMessage  = SignalSimpleMessage(userPhone, message.name, responseState._1)
+      _             <- EitherT.right[Error](signalBot.stopTyping(userPhone, taskRef))
       sendResult    <- EitherT(signalBot.send(
                          SignalSendMessage(
                            List[String](),
@@ -175,7 +180,6 @@ class ConversationPollingHandler(using logger: Logger[IO]):
                            List(message.phone)
                          )
                        ))
-      _             <- EitherT(signalBot.stopTyping(userPhone))
     } yield
       // Update the state map with the new state for this user
       userStates.update(userPhone, responseState._2)
