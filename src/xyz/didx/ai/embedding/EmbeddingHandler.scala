@@ -80,6 +80,7 @@ object EmbeddingHandler {
           .add("id", opportunity.id)
           .add("title", opportunity.title)
           .add("organisationName", opportunity.organisationName)
+          .add("opportunityURL", opportunity.opportunityURL)
 
         val opportunityEmbeddingInput: String =
           removeSpecialCharacters(s"""${opportunity.title} ${opportunity.description}""")
