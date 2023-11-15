@@ -16,10 +16,9 @@ object AgentScript {
         "Name; Email; Cellphone. "
     }
 
-    val endMessage = "When receiving your first message from a user, begin asking for the info you still need. " +
-      "They can give one attribute at a time, or all at once. " +
-      "If a user has already given their name, email or cellphone in the chat, or if you already know it, then you shouldn't ask them again." +
-      "Be friendly."
+    val endMessage = "Prompt the user until you have the required info. " +
+      "If a user has already given their name, email or cellphone in the chat, then you shouldn't ask them again. " +
+      "Be friendly. When receiving a first message from a user, ask for the info you still need."
 
     val fullMessage = s"$baseMessage $conditionalMessage $endMessage"
     new JvmPromptBuilder().addSystemMessage(fullMessage)
