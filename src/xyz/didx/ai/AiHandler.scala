@@ -91,11 +91,17 @@ object AiHandler {
 
               scribe.info(logResult)
 
-              val topMatch: TextSegment = embeddingMatch.embedded()
-              val id: String            = topMatch.metadata("id")
-              val title: String         = topMatch.metadata("title")
-              val organisation: String  = topMatch.metadata("organisationName")
-              val url: String           = s"https://app.yoma.world/opportunities/$id"
+              val topMatch: TextSegment  = embeddingMatch.embedded()
+              val id: String             = topMatch.metadata("id")
+              val title: String          = topMatch.metadata("title")
+              val organisation: String   = topMatch.metadata("organisationName")
+              val opportunityUrl: String = topMatch.metadata("opportunityURL")
+
+              val backupUrl: String = s"https://app.yoma.world/opportunities/$id"
+
+              val url = opportunityUrl match
+                case null | "null" | "" => backupUrl // handle potential edge cases
+                case _                  => opportunityUrl
 
               val response: String =
                 s"You might be interested in: $title, by $organisation. Here's a link to the opportunity page: $url"
