@@ -95,7 +95,7 @@ object AiHandler {
               val id: String            = topMatch.metadata("id")
               val title: String         = topMatch.metadata("title")
               val organisation: String  = topMatch.metadata("organisationName")
-              val url: String           = s"https://app.yoma.world/opportunities/$id"
+              val url: String           = topMatch.metadata("opportunityUrl")
 
               val response: String =
                 s"You might be interested in: $title, by $organisation. Here's a link to the opportunity page: $url"
