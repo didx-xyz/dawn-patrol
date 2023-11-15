@@ -40,4 +40,18 @@ object ConfirmOnboardingHandler {
       conversationId = Some(ConversationId(conversationId))
     )
   }
+
+  def getConfirmationMessage(result: OnboardingResult): String =
+    "Thank you. Please confirm if the following recorded data is correct:\n\n" +
+      s"Name: ${result.fullName.getOrElse("None")}\n" +
+      s"Email: ${result.email.getOrElse("None")}\n" +
+      s"Cellphone: ${result.cellphone.getOrElse("None")}"
+
+  def getReconfirmationMessage(result: OnboardingResult): String =
+    "Apologies, we couldn't infer if you confirmed or not. " +
+      "Please indicate \"yes\" or \"no\" if the following is correct:\n\n" +
+      s"Name: ${result.fullName.getOrElse("None")}\n" +
+      s"Email: ${result.email.getOrElse("None")}\n" +
+      s"Cellphone: ${result.cellphone.getOrElse("None")}"
+
 }

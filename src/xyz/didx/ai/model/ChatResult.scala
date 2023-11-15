@@ -12,7 +12,6 @@ case class OnboardingResult(
       Decoder
 
 case class ConfirmedOnboardingResult(
-  @Description("The next message that you want to send to the user") nextMessageToUser: String,
   @Description("User has confirmed that the recorded data is correct") confirmed: Option[Boolean] = None
 ) derives SerialDescriptor,
       Decoder

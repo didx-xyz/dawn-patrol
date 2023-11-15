@@ -37,10 +37,7 @@ object AiHandler {
               // Results are records. Store in onboardingResults Map, and move to confirmation state
               onboardingResults.update(conversationId, result)
 
-              val response = "Thank you. Please confirm if the following recorded data is correct:\n\n" +
-                s"Name: ${result.fullName.getOrElse("None")}\n" +
-                s"Email: ${result.email.getOrElse("None")}\n" +
-                s"Cellphone: ${result.cellphone.getOrElse("None")}"
+              val response = ConfirmOnboardingHandler.getConfirmationMessage(result)
 
               (response, ChatState.ConfirmOnboardingResult)
 
@@ -58,7 +55,10 @@ object AiHandler {
             case Some(onboardingResult) =>
               val confirmationResult = ConfirmOnboardingHandler.getConfirmation(input, onboardingResult, conversationId)
               confirmationResult.confirmed match
-                case None        => (confirmationResult.nextMessageToUser, state)
+                case None        => (
+                    ConfirmOnboardingHandler.getReconfirmationMessage(onboardingResult),
+                    ChatState.ConfirmOnboardingResult
+                  )
                 case Some(true)  => (
                     "Great, you are now ready to query the available Yoma opportunities! What would you like to do?",
                     ChatState.QueryingOpportunities
