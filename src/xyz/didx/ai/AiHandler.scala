@@ -53,7 +53,7 @@ object AiHandler {
           onboardingResultOpt match
             case None                   => ("Something went wrong retrieving recorded results. Let's try again!", ChatState.Onboarding)
             case Some(onboardingResult) =>
-              val confirmationResult = ConfirmOnboardingHandler.getConfirmation(input, onboardingResult, conversationId)
+              val confirmationResult = ConfirmOnboardingHandler.getConfirmation(input, conversationId)
               confirmationResult.confirmed match
                 case None        => (
                     ConfirmOnboardingHandler.getReconfirmationMessage(onboardingResult),
