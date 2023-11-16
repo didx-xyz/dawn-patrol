@@ -25,14 +25,11 @@ object ConfirmOnboardingHandler {
     builder.addUserMessage(input)
 
     // Create a new conversation with the specific conversationId
-    conversation(
-      {
-        val result = prompt[ConfirmedOnboardingResult](builder.build())
-        scribe.info(f"We have the following confirmation result: $result")
-        result
-      },
-      conversationId = Some(ConversationId(conversationId))
-    )
+    conversation {
+      val result = prompt[ConfirmedOnboardingResult](builder.build())
+      scribe.info(f"We have the following confirmation result: $result")
+      result
+    }
   }
 
   def getConfirmationMessage(result: OnboardingResult): String =
