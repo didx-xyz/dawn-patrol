@@ -2,7 +2,7 @@
 //> using toolkit typelevel:latest
 //> using packaging.output "dawn-patrol"
 //> using nativeMode "release-fast"
-//> using resourceDir ./src/resources
+//> using resourceDir ./src/main/resources
 //> using mainClass xyz.didx.DawnPatrol
 ////> using computeVersion git:tag
 
