@@ -4,10 +4,6 @@ scalacOptions ++= Seq("-Xmax-inlines", "50")
 
 Compile / mainClass := Some("xyz.didx.DawnPatrol")
 
-Compile / unmanagedResourceDirectories ++= Seq(
-  file("/home/elmer/work/dawn-patrol/dawn-patrol/src/xyz/didx/src/resources")
-)
-
 testFrameworks += new TestFramework("munit.Framework")
 
 libraryDependencies ++= Seq(
