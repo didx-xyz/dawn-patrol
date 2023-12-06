@@ -34,7 +34,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          jvm: 21
+          java-version: 21
       - run: scala-cli fmt --check .
       - run: scala-cli --power test .
       - run: sbt scalafix OrganiseImports
