@@ -2,13 +2,14 @@ package xyz.didx
 import cats.effect.IO
 import cats.effect.IOApp
 import cats.effect.std.Dispatcher
+import xyz.didx.config.ConfigReaders.getConf
+
 import fs2.Stream
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import sttp.client3.SttpBackend
 import sttp.client3.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import xyz.didx.ai.handler.Opportunities
-import xyz.didx.config.ConfigReaders.getConf
 
 import scala.concurrent.duration.*
 
