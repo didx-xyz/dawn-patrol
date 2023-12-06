@@ -1,4 +1,5 @@
-scalaVersion := "3.3.1"
+scalaVersion      := "3.3.1"
+semanticdbEnabled := true
 
 scalacOptions ++= Seq("-Xmax-inlines", "50")
 
