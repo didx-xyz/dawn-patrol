@@ -33,7 +33,7 @@ jobs:
       - uses: VirtusLab/scala-cli-setup@v1
       - uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
+          distribution: 'zulu'
           jvm: 21
       - run: scala-cli fmt --check .
       - run: scala-cli --power test .
