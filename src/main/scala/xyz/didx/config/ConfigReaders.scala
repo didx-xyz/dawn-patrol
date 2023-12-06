@@ -1,16 +1,19 @@
 package xyz.didx.config
 
-import java.net.URL
-import java.net.URI
-import pureconfig.ConfigReader
-import pureconfig.ConfigSource
-import pureconfig.generic.derivation.default.*
 import cats.data.EitherT
 import cats.effect.IO
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
+import pureconfig.ConfigReader
+import pureconfig.ConfigSource
+import pureconfig.generic.derivation.default.*
 import sttp.client3.ResponseException
-import xyz.didx.logging.LogWriter.{err, info, logNonEmptyList}
+import xyz.didx.logging.LogWriter.err
+import xyz.didx.logging.LogWriter.info
+import xyz.didx.logging.LogWriter.logNonEmptyList
+
+import java.net.URI
+import java.net.URL
 
 object ConfigReaders:
 

@@ -1,15 +1,11 @@
 package xyz.didx.signal
 
 import cats.data.EitherT
+import cats.effect.FiberIO
 import cats.effect.IO
+import cats.effect.Ref
 import cats.implicits.*
-import xyz.didx.messages.SignalMessage
-import xyz.didx.messages.SignalMessageCodec.signalMessageDecoder
-import xyz.didx.messages.SignalMessageCodec.signalSendMessage
-import xyz.didx.messages.SignalSendMessage
-import xyz.didx.messages.SignalSimpleMessage
 import fs2.Stream
-//import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.*
 import org.typelevel.log4cats.Logger
@@ -19,9 +15,13 @@ import pureconfig.generic.derivation.default.*
 import sttp.client3.*
 import sttp.client3.circe.*
 import sttp.model.*
+import xyz.didx.messages.SignalMessage
+import xyz.didx.messages.SignalMessageCodec.signalMessageDecoder
+import xyz.didx.messages.SignalMessageCodec.signalSendMessage
+import xyz.didx.messages.SignalSendMessage
+import xyz.didx.messages.SignalSimpleMessage
+
 import scala.concurrent.duration._
-import cats.effect.Ref
-import cats.effect.FiberIO
 
 case class SignalConfig(
   signalUrl: String,

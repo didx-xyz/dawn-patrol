@@ -3,10 +3,10 @@ package xyz.didx.registry
 import cats.*
 import cats.data.OptionT
 import cats.syntax.all.*
-import xyz.didx.didcomm.DIDDoc
 import io.circe.Decoder.Result
-import io.circe.syntax.*
 import io.circe.*
+import io.circe.syntax.*
+import xyz.didx.didcomm.DIDDoc
 
 /*
 {

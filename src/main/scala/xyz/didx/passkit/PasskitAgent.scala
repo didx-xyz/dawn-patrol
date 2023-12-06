@@ -1,12 +1,20 @@
 package xyz.didx.passkit
 
 import cats.data.EitherT
-import cats.effect.{IO, Resource}
-import de.brendamour.jpasskit.{PKBarcode, PKField, PKPass}
-import de.brendamour.jpasskit.enums.{PKBarcodeFormat, PKPassType}
+import cats.effect.IO
+import cats.effect.Resource
+import de.brendamour.jpasskit.PKBarcode
+import de.brendamour.jpasskit.PKField
+import de.brendamour.jpasskit.PKPass
+import de.brendamour.jpasskit.enums.PKBarcodeFormat
+import de.brendamour.jpasskit.enums.PKPassType
 import de.brendamour.jpasskit.passes.PKGenericPass
-import de.brendamour.jpasskit.signing.{PKFileBasedSigningUtil, PKPassTemplateFolder, PKSigningInformationUtil}
-import pureconfig.{ConfigReader, ConfigSource}
+import de.brendamour.jpasskit.signing.PKFileBasedSigningUtil
+import de.brendamour.jpasskit.signing.PKPassTemplateFolder
+import de.brendamour.jpasskit.signing.PKSigningInformationUtil
+import org.typelevel.log4cats.Logger
+import pureconfig.ConfigReader
+import pureconfig.ConfigSource
 import pureconfig.generic.derivation.default.*
 
 import java.awt.Color
@@ -14,7 +22,6 @@ import java.io.*
 import java.net.URL
 import java.nio.charset.Charset
 import scala.jdk.CollectionConverters.*
-import org.typelevel.log4cats.Logger
 import scala.util.Try
 
 case class PasskitConfig(

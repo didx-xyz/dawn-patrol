@@ -1,6 +1,9 @@
 package xyz.didx.ai.model
 
-import io.circe.{Decoder, DecodingFailure, HCursor}
+import io.circe.Decoder
+import io.circe.DecodingFailure
+import io.circe.HCursor
+
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException

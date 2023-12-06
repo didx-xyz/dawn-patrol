@@ -1,19 +1,22 @@
 package xyz.didx.ai.handler
 
-import java.util.Base64
-import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
-import java.util.zip.{GZIPInputStream, GZIPOutputStream}
-import sttp.client4.*
 import cats.data.EitherT
 import cats.effect.IO
+import io.circe
+import io.circe.generic.auto._
+import io.circe.parser.decode
+import sttp.client4.*
 import ujson.Value.Value
+import xyz.didx.ai.embedding.EmbeddingHandler
+import xyz.didx.ai.model.Opportunity
+
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.util.Base64
+import java.util.zip.GZIPInputStream
+import java.util.zip.GZIPOutputStream
 import scala.util.Try
 import scala.util.chaining.scalaUtilChainingOps
-import io.circe.parser.decode
-import io.circe.generic.auto._
-import xyz.didx.ai.model.Opportunity
-import io.circe
-import xyz.didx.ai.embedding.EmbeddingHandler
 
 object Opportunities {
 

@@ -2,15 +2,15 @@ package xyz.didx.messages
 
 import cats.Applicative.ops.toAllApplicativeOps
 import cats.*
-import xyz.didx.messages.Member
-import xyz.didx.messages.SignalMessage
-import xyz.didx.messages.SignalSendMessage
 import io.circe.Decoder
 import io.circe.Decoder.Result
 import io.circe.Encoder
 import io.circe.Json
 import io.circe.*
 import io.circe.syntax._
+import xyz.didx.messages.Member
+import xyz.didx.messages.SignalMessage
+import xyz.didx.messages.SignalSendMessage
 
 object SignalMessageCodec:
   given memberDecoder: Decoder[Member] = new Decoder[Member]:
