@@ -1,5 +1,12 @@
 scalaVersion := "3.3.1"
 
+lazy val circeVersion       = "0.14.6"
+lazy val pureconfigVersion  = "0.17.4"
+lazy val redis4CatsVersion  = "1.5.2"
+lazy val sttpClient3Version = "3.9.1"
+lazy val langchain4jVersion = "0.23.0"
+lazy val xefVersion         = "0.0.3"
+
 lazy val root = (project in file("."))
   .settings(
     settings,
@@ -31,14 +38,18 @@ lazy val root = (project in file("."))
     )
   )
 
-lazy val circeVersion       = "0.14.6"
-lazy val pureconfigVersion  = "0.17.4"
-lazy val redis4CatsVersion  = "1.5.2"
-lazy val sttpClient3Version = "3.9.1"
-lazy val langchain4jVersion = "0.23.0"
-lazy val xefVersion         = "0.0.3"
-
-lazy val compilerOptions = Seq("-Xmax-inlines", "50")
+// Settings
+lazy val compilerOptions = Seq(
+  "-Xmax-inlines",
+  "50",
+  "-unchecked",                    // Enable additional warnings where generated code depends on assumptions.
+  "-feature",                      // Emit warning and location for usages of features that should be imported explicitly.
+  "-language:existentials",        // Existential types (besides wildcard types) can be written and inferred
+  "-language:higherKinds",         // Allow higher-kinded types
+  "-language:implicitConversions", // Allow definition of implicit functions called views
+  "-language:postfixOps",          // Allow postfix operator notation, such as 1 to 10 toList (not recommended)
+  "-deprecation"
+)
 
 lazy val commonSettings = Seq(
   scalacOptions ++= compilerOptions
