@@ -35,7 +35,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 21
-      - run: scala-cli fmt --check .
+      - run: scalafmt --check
       - run: scala-cli --power test .
       - run: sbt "scalafix --check OrganizeImports"
 
