@@ -6,10 +6,7 @@ import cats.effect.IO
 import cats.effect.Ref
 import cats.implicits.*
 import fs2.Stream
-import io.circe.parser.*
 import io.circe.syntax.*
-import org.typelevel.log4cats.Logger
-import org.typelevel.log4cats.slf4j.Slf4jLogger
 import pureconfig.*
 import pureconfig.generic.derivation.default.*
 import sttp.client3.*

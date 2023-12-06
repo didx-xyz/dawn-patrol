@@ -4,26 +4,18 @@ import cats.data.EitherT
 import cats.effect.FiberIO
 import cats.effect.IO
 import cats.effect.Ref
-import cats.effect.kernel.Resource
 import cats.implicits.*
-import cats.syntax.traverse.*
 import io.circe.parser.*
 import io.circe.syntax.*
 import org.typelevel.log4cats.Logger
-import org.typelevel.log4cats.slf4j.Slf4jLogger
 import sttp.client3.SttpBackend
 import xyz.didx.ai.AiHandler
 import xyz.didx.ai.model.ChatState
 import xyz.didx.config.ConfigReaders.*
-import xyz.didx.connection.RedisStorage
-import xyz.didx.didcomm.Service
-import xyz.didx.didcomm.ServiceEndpointNodes
 import xyz.didx.didcomm.*
 import xyz.didx.logging.LogWriter.*
 import xyz.didx.messages.*
-import xyz.didx.openai.OpenAIAgent
 import xyz.didx.passkit.PasskitAgent
-import xyz.didx.registry.RegistryClient
 import xyz.didx.registry.*
 import xyz.didx.signal.SignalBot
 

@@ -7,7 +7,6 @@ import xyz.didx.ai.embedding.EmbeddingHandler
 import xyz.didx.ai.handler.ConfirmOnboardingHandler
 import xyz.didx.ai.handler.OnboardingHandler
 import xyz.didx.ai.model.ChatState
-import xyz.didx.ai.model.ConfirmedOnboardingResult
 import xyz.didx.ai.model.OnboardingResult
 
 import scala.collection.mutable
