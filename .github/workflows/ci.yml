@@ -37,7 +37,7 @@ jobs:
           java-version: 21
       - run: scala-cli fmt --check .
       - run: scala-cli --power test .
-      - run: sbt "scalafix OrganizeImports"
+      - run: sbt "scalafix --check OrganizeImports"
 
   build:
     name: Build and push Docker
