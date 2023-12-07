@@ -31,10 +31,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: coursier/cache-action@v6
       - uses: VirtusLab/scala-cli-setup@v1
-      - uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'
-          java-version: 21
+          jvm: 21
       - run: scala-cli fmt --check .
       - run: sbt "test"
       - run: sbt "scalafix --check OrganizeImports"
