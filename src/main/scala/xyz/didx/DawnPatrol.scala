@@ -1,4 +1,5 @@
 package xyz.didx
+
 import cats.effect.IO
 import cats.effect.IOApp
 import cats.effect.std.Dispatcher
