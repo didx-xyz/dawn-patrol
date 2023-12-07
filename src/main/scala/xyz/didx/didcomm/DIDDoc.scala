@@ -5,12 +5,10 @@ package xyz.didx.didcomm
 
 import io.circe.*
 import io.circe.syntax._
-
-//import foundation.identity.did.VerificationRelationships
-import java.net.URI
-//import xyz.didx.didcomm.VerificationMethodType
 import xyz.didx.didcomm.DIDCodec
 import xyz.didx.didcomm.VerificationMethodType
+
+import java.net.URI
 import scala.util.matching.Regex
 
 //import foundation.identity.did.VerificationMethod

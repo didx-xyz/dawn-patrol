@@ -5,7 +5,6 @@ import cats.effect.IO
 import cats.effect.Sync
 import cats.implicits._
 import cats.implicits._
-import xyz.didx.messages.SignalSimpleMessage
 import io.circe.*
 import io.circe.syntax.*
 import org.typelevel.log4cats.Logger
@@ -14,6 +13,7 @@ import pureconfig.*
 import pureconfig.generic.derivation.default.*
 import sttp.client3.*
 import sttp.client3.circe.*
+import xyz.didx.messages.SignalSimpleMessage
 
 case class APIConf(apiKey: String, orgId: String) derives ConfigReader:
   override def toString: String =

@@ -3,8 +3,8 @@ package xyz.didx.openai
 import cats.*
 import cats.syntax.all.*
 import io.circe.Decoder.Result
-import io.circe.syntax.*
 import io.circe.*
+import io.circe.syntax.*
 
 object OpenAIMessageCodec {
   given openAIResponseDecoder: Decoder[OpenAIResponse] =

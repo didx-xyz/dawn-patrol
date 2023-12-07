@@ -62,3 +62,7 @@ docker run -it --rm \
   -e OPENAI_TOKEN='oai_key' \
   ghcr.io/didx-xyz/dawn-patrol
 ```
+
+## Scalafix
+
+To organise imports, while in sbt run: scalafix OrganizeImports

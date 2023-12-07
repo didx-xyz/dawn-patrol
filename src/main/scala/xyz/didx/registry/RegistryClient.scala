@@ -3,16 +3,16 @@ package xyz.didx.registry
 import cats.data.EitherT
 import cats.effect.IO
 import cats.implicits.*
-import xyz.didx.registry.RegistryResponse
-import xyz.didx.registry.RegistryResponseCodec.registryResponseDecoder
 import io.circe.*
 import io.circe.parser.*
 import io.circe.syntax.*
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import sttp.client3.*
 import sttp.client3.circe.*
 import sttp.model.*
-import org.typelevel.log4cats.Logger
-import org.typelevel.log4cats.slf4j.Slf4jLogger
+import xyz.didx.registry.RegistryResponse
+import xyz.didx.registry.RegistryResponseCodec.registryResponseDecoder
 
 final case class RegistryClient(registryUrl: String, apiKey: String):
   given logger: Logger[IO]                                    = Slf4jLogger.getLogger[IO]

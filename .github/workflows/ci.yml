@@ -34,7 +34,8 @@ jobs:
         with:
           jvm: 21
       - run: scala-cli fmt --check .
-      - run: scala-cli --power test .
+      - run: sbt test
+      - run: sbt "scalafix --check OrganizeImports"
 
   build:
     name: Build and push Docker

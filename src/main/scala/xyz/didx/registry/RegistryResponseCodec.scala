@@ -1,13 +1,15 @@
 package xyz.didx.registry
 
-import io.circe.*
-import io.circe.{Decoder, Json, Encoder}
-import io.circe.syntax.*
-import cats.syntax.all.*
 import cats.*
+import cats.syntax.all.*
+import io.circe.Decoder
+import io.circe.Encoder
+import io.circe.Json
+import io.circe.*
+import io.circe.syntax.*
 import io.circe.syntax._
-import xyz.didx.didcomm.DIDCodec.encodeDIDDoc
 import xyz.didx.didcomm.DIDCodec
+import xyz.didx.didcomm.DIDCodec.encodeDIDDoc
 
 object RegistryResponseCodec:
   import io.circe.generic.auto.*

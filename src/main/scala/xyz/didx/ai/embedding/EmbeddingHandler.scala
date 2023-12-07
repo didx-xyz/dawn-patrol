@@ -1,18 +1,18 @@
 package xyz.didx.ai.embedding
 
-import scala.collection.JavaConverters._
+import dev.langchain4j.data.document.Metadata
 import dev.langchain4j.data.embedding.Embedding
 import dev.langchain4j.data.segment.TextSegment
-import dev.langchain4j.store.embedding.{EmbeddingMatch, EmbeddingStore}
-import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore
-import dev.langchain4j.model.huggingface.HuggingFaceEmbeddingModel;
-
 import dev.langchain4j.model.embedding.EmbeddingModel
-import dev.langchain4j.data.segment.TextSegment
-import dev.langchain4j.data.document.Metadata
-import xyz.didx.ai.model.Opportunity
-import java.time.Duration
+import dev.langchain4j.model.huggingface.HuggingFaceEmbeddingModel
 import dev.langchain4j.model.output.Response
+import dev.langchain4j.store.embedding.EmbeddingMatch
+import dev.langchain4j.store.embedding.EmbeddingStore
+import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore
+import xyz.didx.ai.model.Opportunity
+
+import java.time.Duration
+import scala.collection.JavaConverters._
 
 object EmbeddingHandler {
   private val embeddingModel: EmbeddingModel = HuggingFaceEmbeddingModel

@@ -1,16 +1,13 @@
 package xyz.didx.connection
 
-import dev.profunktor.redis4cats.Redis
-import cats.effect.kernel.Resource
 import cats.effect.IO
-import dev.profunktor.redis4cats.RedisCommands
-import io.circe.syntax.*
 import cats.effect._
+import cats.effect.kernel.Resource
 import cats.implicits._
 import dev.profunktor.redis4cats.Redis
 import dev.profunktor.redis4cats.RedisCommands
-
 import dev.profunktor.redis4cats.effect.Log.Stdout._
+import io.circe.syntax.*
 import xyz.didx.didcomm.DIDTypes.*
 
 import scala.concurrent.duration.FiniteDuration

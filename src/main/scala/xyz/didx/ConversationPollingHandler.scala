@@ -1,38 +1,29 @@
 package xyz.didx
 
-import scala.collection.mutable
-//import io.circe._
+import cats.data.EitherT
+import cats.effect.FiberIO
+import cats.effect.IO
+import cats.effect.Ref
+import cats.implicits.*
 import io.circe.parser.*
 import io.circe.syntax.*
 import org.typelevel.log4cats.Logger
-import org.typelevel.log4cats.slf4j.Slf4jLogger
 import sttp.client3.SttpBackend
-import xyz.didx.config.ConfigReaders.*
-import xyz.didx.logging.LogWriter.*
-import xyz.didx.didcomm.*
-
-import java.net.URI
-import xyz.didx.signal.SignalBot
-import cats.effect.kernel.Resource
-import xyz.didx.connection.RedisStorage
-import xyz.didx.messages.*
-import cats.data.EitherT
-import cats.effect.IO
-import cats.implicits.*
-import cats.syntax.traverse.*
-
-import SignalMessageCodec.memberDecoder
-import xyz.didx.registry.*
-import RegistryResponseCodec.encodeRegistryRequest
-import xyz.didx.didcomm.Service
-import xyz.didx.didcomm.ServiceEndpointNodes
-import xyz.didx.registry.RegistryClient
-import xyz.didx.openai.OpenAIAgent
-import xyz.didx.passkit.PasskitAgent
 import xyz.didx.ai.AiHandler
 import xyz.didx.ai.model.ChatState
-import cats.effect.Ref
-import cats.effect.FiberIO
+import xyz.didx.config.ConfigReaders.*
+import xyz.didx.didcomm.*
+import xyz.didx.logging.LogWriter.*
+import xyz.didx.messages.*
+import xyz.didx.passkit.PasskitAgent
+import xyz.didx.registry.*
+import xyz.didx.signal.SignalBot
+
+import java.net.URI
+import scala.collection.mutable
+
+import SignalMessageCodec.memberDecoder
+import RegistryResponseCodec.encodeRegistryRequest
 
 class ConversationPollingHandler(using logger: Logger[IO]):
   val appConf      = getConf(using logger)

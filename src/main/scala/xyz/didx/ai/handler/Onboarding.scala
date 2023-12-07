@@ -1,12 +1,13 @@
 package xyz.didx.ai.handler
 
-import scala.collection.mutable
-import com.xebia.functional.xef.prompt.PromptBuilder
 import com.xebia.functional.xef.prompt.Prompt
+import com.xebia.functional.xef.prompt.PromptBuilder
 import com.xebia.functional.xef.scala.conversation.*
 import com.xebia.functional.xef.store.ConversationId
-import xyz.didx.ai.model.OnboardingResult
 import xyz.didx.ai.model.AgentScript
+import xyz.didx.ai.model.OnboardingResult
+
+import scala.collection.mutable
 import scala.util.Random
 
 object OnboardingHandler {

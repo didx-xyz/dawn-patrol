@@ -1,15 +1,15 @@
 package xyz.didx.ai
 
-import scala.collection.mutable
-import xyz.didx.ai.model.ChatState
-import xyz.didx.ai.handler.OnboardingHandler
-import xyz.didx.ai.handler.ConfirmOnboardingHandler
-import dev.langchain4j.data.segment.TextSegment
-import xyz.didx.ai.embedding.EmbeddingHandler
-import dev.langchain4j.store.embedding.EmbeddingMatch
-import xyz.didx.ai.model.OnboardingResult
-import xyz.didx.ai.model.ConfirmedOnboardingResult
 import cats.effect.IO
+import dev.langchain4j.data.segment.TextSegment
+import dev.langchain4j.store.embedding.EmbeddingMatch
+import xyz.didx.ai.embedding.EmbeddingHandler
+import xyz.didx.ai.handler.ConfirmOnboardingHandler
+import xyz.didx.ai.handler.OnboardingHandler
+import xyz.didx.ai.model.ChatState
+import xyz.didx.ai.model.OnboardingResult
+
+import scala.collection.mutable
 import scala.util.Try
 
 object AiHandler {
