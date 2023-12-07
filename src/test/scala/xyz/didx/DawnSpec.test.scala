@@ -1,4 +1,5 @@
 package xyz.didx
+
 import munit.CatsEffectSuite
 
 class DawnSpec extends CatsEffectSuite {
@@ -7,5 +8,4 @@ class DawnSpec extends CatsEffectSuite {
     println(x)
     assertEquals(1, 1)
   }
-
 }

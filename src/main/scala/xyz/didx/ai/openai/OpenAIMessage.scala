@@ -1,24 +1,5 @@
 package xyz.didx.openai
-/* {
-  "id": "cmpl-6nognZq5jEzrrxtd7hkQ06vQcNOAu",
-  "object": "text_completion",
-  "created": 1677330941,
-  "model": "text-davinci-003",
-  "choices": [
-    {
-      "text": "\nIt's important to remember to renew your drivers license before it expires. You can usually renew your license online or in person at your local DMV. Make sure to check the expiration date on your license and plan ahead so you don't miss the deadline.",
-      "index": 0,
-      "logprobs": null,
-      "finish_reason": "stop"
-    }
-  ],
-  "usage": {
-    "prompt_tokens": 9,
-    "completion_tokens": 51,
-    "total_tokens": 60
-  }
-}
- */
+
 final case class OpenAIRequest(
   model: String = "text-davinci-003",
   prompt: String,

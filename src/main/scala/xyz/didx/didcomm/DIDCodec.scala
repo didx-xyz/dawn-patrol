@@ -1,4 +1,5 @@
 package xyz.didx.didcomm
+
 import cats.*
 import cats.syntax.all.*
 import io.circe.Decoder.Result
@@ -13,9 +14,6 @@ import xyz.didx.didcomm.ServiceEndpointURI
 import xyz.didx.didcomm.VerificationMethod
 
 import java.net.URI
-//import xyz.didx.didcomm.VerificationMethodType
-
-//import summon.{Decoder => _, _}
 
 object DIDCodec:
   given encodeDIDDoc: Encoder[DIDDoc] =
