@@ -18,7 +18,7 @@ lazy val root = (project in file("."))
       "com.github.pureconfig"         %% "pureconfig-cats-effect"         % pureconfigVersion,
       "dev.profunktor"                %% "redis4cats-effects"             % redis4CatsVersion,
       "dev.profunktor"                %% "redis4cats-log4cats"            % redis4CatsVersion,
-      "com.softwaremill.sttp.client4" %% "core"                           % "4.0.0-M6",
+      "com.softwaremill.sttp.client4" %% "core"                           % "4.0.0-M8",
       "com.softwaremill.sttp.client3" %% "core"                           % sttpClient3Version,
       "com.softwaremill.sttp.client3" %% "circe"                          % sttpClient3Version,
       "com.softwaremill.sttp.client3" %% "async-http-client-backend-cats" % sttpClient3Version,
