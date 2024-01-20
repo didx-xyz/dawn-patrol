@@ -1,7 +1,7 @@
 scalaVersion := "3.3.1"
 
 lazy val circeVersion       = "0.14.6"
-lazy val pureconfigVersion  = "0.17.4"
+lazy val pureconfigVersion  = "0.17.5"
 lazy val redis4CatsVersion  = "1.5.2"
 lazy val sttpClient3Version = "3.9.1"
 lazy val langchain4jVersion = "0.23.0"
@@ -24,14 +24,14 @@ lazy val root = (project in file("."))
       "com.softwaremill.sttp.client3" %% "async-http-client-backend-cats" % sttpClient3Version,
       "de.brendamour"                  % "jpasskit"                       % "0.3.3",
       "com.outr"                      %% "scribe"                         % "3.13.0",
-      "com.lihaoyi"                   %% "upickle"                        % "3.1.3",
+      "com.lihaoyi"                   %% "upickle"                        % "3.1.4",
       "dev.langchain4j"                % "langchain4j"                    % langchain4jVersion,
       "dev.langchain4j"                % "langchain4j-hugging-face"       % langchain4jVersion,
       "com.xebia"                     %% "xef-scala"                      % xefVersion,
       "com.xebia"                      % "xef-pdf"                        % xefVersion,
       "com.xebia"                      % "xef-reasoning-jvm"              % xefVersion,
       "com.xebia"                      % "xef-openai"                     % xefVersion,
-      "ch.qos.logback"                 % "logback-classic"                % "1.4.11",
+      "ch.qos.logback"                 % "logback-classic"                % "1.4.14",
       "org.apache.logging.log4j"       % "log4j-core"                     % "2.21.1",
       "org.typelevel"                 %% "log4cats-slf4j"                 % "2.6.0",
       "co.fs2"                        %% "fs2-core"                       % "3.9.3",
