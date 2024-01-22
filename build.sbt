@@ -22,7 +22,7 @@ lazy val root = (project in file("."))
       "com.softwaremill.sttp.client3" %% "core"                           % sttpClient3Version,
       "com.softwaremill.sttp.client3" %% "circe"                          % sttpClient3Version,
       "com.softwaremill.sttp.client3" %% "async-http-client-backend-cats" % sttpClient3Version,
-      "de.brendamour"                  % "jpasskit"                       % "0.3.3",
+      "de.brendamour"                  % "jpasskit"                       % "0.3.4",
       "com.outr"                      %% "scribe"                         % "3.13.0",
       "com.lihaoyi"                   %% "upickle"                        % "3.1.4",
       "dev.langchain4j"                % "langchain4j"                    % langchain4jVersion,
