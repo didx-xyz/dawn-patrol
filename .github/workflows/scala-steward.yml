@@ -7,6 +7,8 @@ name: Launch Scala Steward
 jobs:
   scala-steward:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
     name: Launch Scala Steward
     steps:
       - name: Launch Scala Steward
