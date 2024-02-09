@@ -3,7 +3,7 @@ scalaVersion := "3.3.1"
 lazy val circeVersion       = "0.14.6"
 lazy val pureconfigVersion  = "0.17.5"
 lazy val redis4CatsVersion  = "1.5.2"
-lazy val sttpClient3Version = "3.9.2"
+lazy val sttpClient3Version = "3.9.3"
 lazy val langchain4jVersion = "0.27.0"
 lazy val xefVersion         = "0.0.3"
 
@@ -18,7 +18,7 @@ lazy val root = (project in file("."))
       "com.github.pureconfig"         %% "pureconfig-cats-effect"         % pureconfigVersion,
       "dev.profunktor"                %% "redis4cats-effects"             % redis4CatsVersion,
       "dev.profunktor"                %% "redis4cats-log4cats"            % redis4CatsVersion,
-      "com.softwaremill.sttp.client4" %% "core"                           % "4.0.0-M8",
+      "com.softwaremill.sttp.client4" %% "core"                           % "4.0.0-M9",
       "com.softwaremill.sttp.client3" %% "core"                           % sttpClient3Version,
       "com.softwaremill.sttp.client3" %% "circe"                          % sttpClient3Version,
       "com.softwaremill.sttp.client3" %% "async-http-client-backend-cats" % sttpClient3Version,
