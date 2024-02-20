@@ -50,8 +50,7 @@ object AiHandler {
             case OnboardingResult(_, _, _, _) =>
               scribe.info(
                 s"Data is not yet fully captured, remain in same state for conversationId: $conversationId"
-              )
-              (result.nextMessageToUser, state)
+              )(result.nextMessageToUser, state)
           }
           (messageToUser, nextState)
         }.toEither.left.map(e => new Error(e.getMessage())))
