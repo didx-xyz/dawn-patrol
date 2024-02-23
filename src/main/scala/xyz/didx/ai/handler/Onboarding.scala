@@ -1,6 +1,5 @@
 package xyz.didx.ai.handler
 
-import com.xebia.functional.xef.prompt.Prompt
 import com.xebia.functional.xef.prompt.PromptBuilder
 import com.xebia.functional.xef.scala.conversation.*
 import com.xebia.functional.xef.store.ConversationId
