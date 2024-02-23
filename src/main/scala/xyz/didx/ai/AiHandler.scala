@@ -51,6 +51,7 @@ object AiHandler {
               scribe.info(
                 s"Data is not yet fully captured, remain in same state for conversationId: $conversationId"
               )
+
               (result.nextMessageToUser, state)
           }
           (messageToUser, nextState)
