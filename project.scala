@@ -1,4 +1,4 @@
-//> using scala 3.3.1
+//> using scala 3.3.3
 //> using toolkit typelevel:latest
 //> using packaging.output "dawn-patrol"
 //> using nativeMode "release-fast"
