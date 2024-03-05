@@ -6,7 +6,7 @@ import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import pureconfig.ConfigReader
 import pureconfig.ConfigSource
-import pureconfig.generic.derivation.default.*
+import pureconfig.generic.derivation.default._
 import sttp.client3.ResponseException
 import xyz.didx.logging.LogWriter.err
 import xyz.didx.logging.LogWriter.info

@@ -1,10 +1,10 @@
 package xyz.didx.openai
 
-import cats.*
-import cats.syntax.all.*
+import cats._
+import cats.syntax.all._
 import io.circe.Decoder.Result
-import io.circe.*
-import io.circe.syntax.*
+import io.circe._
+import io.circe.syntax._
 
 object OpenAIMessageCodec {
   given openAIResponseDecoder: Decoder[OpenAIResponse] =

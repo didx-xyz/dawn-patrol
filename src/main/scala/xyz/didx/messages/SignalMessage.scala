@@ -1,7 +1,7 @@
 package xyz.didx.messages
 
 import cats.effect.IO
-import io.circe.parser.*
+import io.circe.parser._
 
 case class SignalSendMessage(
   attachments: List[String],

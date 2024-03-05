@@ -1,6 +1,6 @@
 package xyz.didx.ai.model
 
-import com.xebia.functional.xef.scala.conversation.*
+import com.xebia.functional.xef.scala.conversation._
 import io.circe.Decoder
 
 case class OnboardingResult(

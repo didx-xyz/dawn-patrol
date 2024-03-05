@@ -1,12 +1,12 @@
 package xyz.didx.messages
 
 import cats.Applicative.ops.toAllApplicativeOps
-import cats.*
+import cats._
 import io.circe.Decoder
 import io.circe.Decoder.Result
 import io.circe.Encoder
 import io.circe.Json
-import io.circe.*
+import io.circe._
 import io.circe.syntax._
 import xyz.didx.messages.Member
 import xyz.didx.messages.SignalMessage

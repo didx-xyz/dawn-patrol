@@ -1,11 +1,11 @@
 package xyz.didx.registry
 
-import cats.*
+import cats._
 import cats.data.OptionT
-import cats.syntax.all.*
+import cats.syntax.all._
 import io.circe.Decoder.Result
-import io.circe.*
-import io.circe.syntax.*
+import io.circe._
+import io.circe.syntax._
 import xyz.didx.didcomm.DIDDoc
 
 /*

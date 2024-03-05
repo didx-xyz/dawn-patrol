@@ -7,8 +7,8 @@ import cats.implicits._
 import dev.profunktor.redis4cats.Redis
 import dev.profunktor.redis4cats.RedisCommands
 import dev.profunktor.redis4cats.effect.Log.Stdout._
-import io.circe.syntax.*
-import xyz.didx.didcomm.DIDTypes.*
+import io.circe.syntax._
+import xyz.didx.didcomm.DIDTypes._
 
 import scala.concurrent.duration.FiniteDuration
 

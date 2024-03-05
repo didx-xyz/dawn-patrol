@@ -1,9 +1,9 @@
 package xyz.didx.didcomm
 
-import cats.*
-import cats.syntax.all.*
+import cats._
+import cats.syntax.all._
 import io.circe.Decoder.Result
-import io.circe.*
+import io.circe._
 import xyz.didx.didcomm.DIDDoc
 import xyz.didx.didcomm.Service
 import xyz.didx.didcomm.ServiceEndpoint
