@@ -15,13 +15,13 @@ import de.brendamour.jpasskit.signing.PKSigningInformationUtil
 import org.typelevel.log4cats.Logger
 import pureconfig.ConfigReader
 import pureconfig.ConfigSource
-import pureconfig.generic.derivation.default.*
+import pureconfig.generic.derivation.default._
 
 import java.awt.Color
-import java.io.*
+import java.io._
 import java.net.URL
 import java.nio.charset.Charset
-import scala.jdk.CollectionConverters.*
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 case class PasskitConfig(

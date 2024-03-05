@@ -4,13 +4,13 @@ import cats.data.EitherT
 import cats.effect.FiberIO
 import cats.effect.IO
 import cats.effect.Ref
-import cats.implicits.*
+import cats.implicits._
 import fs2.Stream
-import io.circe.syntax.*
+import io.circe.syntax._
 import pureconfig.ConfigReader
 import pureconfig.ConfigSource
-import pureconfig.generic.derivation.default.*
-import sttp.client3.*
+import pureconfig.generic.derivation.default._
+import sttp.client3._
 import sttp.client3.circe.asJson
 import sttp.model.StatusCode
 import xyz.didx.messages.SignalMessage

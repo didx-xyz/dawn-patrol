@@ -5,7 +5,7 @@ import cats.effect.IO
 import io.circe
 import io.circe.generic.auto._
 import io.circe.parser.decode
-import sttp.client4.*
+import sttp.client4._
 import ujson.Value.Value
 import xyz.didx.ai.embedding.EmbeddingHandler
 import xyz.didx.ai.model.Opportunity

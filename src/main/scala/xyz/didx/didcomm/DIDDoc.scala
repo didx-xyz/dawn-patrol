@@ -3,7 +3,7 @@ package xyz.didx.didcomm
 //import org.didcommx.didcomm.common.VerificationMaterial
 //import org.didcommx.didcomm.common.VerificationMethodType
 
-import io.circe.*
+import io.circe._
 import io.circe.syntax._
 import xyz.didx.didcomm.DIDCodec
 import xyz.didx.didcomm.VerificationMethodType

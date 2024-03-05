@@ -2,15 +2,15 @@ package xyz.didx.registry
 
 import cats.data.EitherT
 import cats.effect.IO
-import cats.implicits.*
-import io.circe.*
-import io.circe.parser.*
-import io.circe.syntax.*
+import cats.implicits._
+import io.circe._
+import io.circe.parser._
+import io.circe.syntax._
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import sttp.client3.*
-import sttp.client3.circe.*
-import sttp.model.*
+import sttp.client3._
+import sttp.client3.circe._
+import sttp.model._
 import xyz.didx.registry.RegistryResponse
 import xyz.didx.registry.RegistryResponseCodec.registryResponseDecoder
 

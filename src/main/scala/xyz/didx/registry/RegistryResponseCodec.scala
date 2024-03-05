@@ -1,12 +1,12 @@
 package xyz.didx.registry
 
-import cats.*
-import cats.syntax.all.*
+import cats._
+import cats.syntax.all._
 import io.circe.Decoder
 import io.circe.Encoder
 import io.circe.Json
-import io.circe.*
-import io.circe.syntax.*
+import io.circe._
+import io.circe.syntax._
 import io.circe.syntax._
 import xyz.didx.didcomm.DIDCodec
 import xyz.didx.didcomm.DIDCodec.encodeDIDDoc
