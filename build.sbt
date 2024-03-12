@@ -5,7 +5,7 @@ lazy val pureconfigVersion  = "0.17.6"
 lazy val redis4CatsVersion  = "1.6.0"
 lazy val sttpClient3Version = "3.9.4"
 lazy val sttpClient4Version = "4.0.0-M10"
-lazy val langchain4jVersion = "0.27.1"
+lazy val langchain4jVersion = "0.28.0"
 lazy val xefVersion         = "0.0.3"
 
 lazy val root = (project in file("."))
