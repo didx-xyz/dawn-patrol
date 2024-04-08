@@ -6,6 +6,7 @@ import io.circe
 import io.circe.generic.auto._
 import io.circe.parser.decode
 import sttp.client4._
+import sttp.model.Header
 import ujson.Value.Value
 import xyz.didx.ai.embedding.EmbeddingHandler
 import xyz.didx.ai.model.Opportunity
@@ -30,46 +31,38 @@ object Opportunities {
     } yield EmbeddingHandler.getAndStoreAll(opps)
 
   def fetchOpportunities(): IO[List[Opportunity]] = {
-    val request = basicRequest
-      .get(uri"https://api.yoma.world/api/v1/opportunities")
-      .header("accept", "application/json")
+    val request = emptyRequest
+      .post(uri"https://api.yoma.world/api/v3/opportunity/search")
+      .body("""{"pageNumber": 1, "pageSize": 1000}""")
+      .withHeaders(Seq(
+        Header("Accept", "text/plain"),
+        Header("Content-Type", "application/json-patch+json")
+      ))
       .response(asStringAlways)
 
-    val decodedOpportunities: EitherT[IO, String, String] = for {
-      response        <- EitherT.liftF(IO.fromFuture(IO(request.send(backend))))
-      parsed          <- EitherT.fromEither(
-                           Try(ujson.read(response.body)).toEither.left
-                             .map(e => e.getMessage)
-                         )
-      data            <- EitherT.fromEither(
-                           Try(parsed("data").str).toEither.left
-                             .map(e => e.getMessage)
-                             .flatMap(s =>
-                               Either
-                                 .cond(
-                                   s.nonEmpty,
-                                   s,
-                                   s"Failure in fetching opportunities data: ${response.body}"
-                                 )
-                             )
-                         )
-      decodedData      = decodeBase64(data)
-      decompressedData = decompressGzip(decodedData)
-    } yield decompressedData
+    val decodedOpportunities: EitherT[IO, String, List[Value]] = for {
+      response      <- EitherT.liftF(IO.fromFuture(IO(request.send(backend))))
+      parsed        <- EitherT.fromEither(
+                         Try(ujson.read(response.body)).toEither.left
+                           .map(e => e.getMessage)
+                       )
+      opportunities <- EitherT.fromEither(
+                         Try(parsed("items").arr.to[List[Value]]).toEither.left
+                           .map(e => e.getMessage)
+                       )
+    } yield opportunities
 
     val listOfOpportunities: IO[List[Opportunity]] = decodedOpportunities.value.flatMap {
       case Right(decodeSuccess) =>
-        val parsed: Either[circe.Error, List[Opportunity]] =
-          decode[List[Opportunity]](decodeSuccess)
-        IO.fromEither(parsed).handleErrorWith { parseError =>
-          scribe.warn(s"Opportunities parsing error: $parseError")
-          IO.pure(List.empty[Opportunity])
+        decode[List[Opportunity]](decodeSuccess) match {
+          case Right(opportunities) =>
+            IO.pure(opportunities)
+          case Left(parseError)     =>
+            IO(scribe.warn(s"Opportunities parsing error: $parseError")).as(List.empty[Opportunity])
         }
 
       case Left(decodeError) =>
-        val r = s"Opportunities decoding error: $decodeError"
-        scribe.warn(r)
-        IO.pure(List.empty[Opportunity])
+        IO(scribe.warn(s"Opportunities decoding error: $decodeError")).as(List.empty[Opportunity])
     }
 
     listOfOpportunities
