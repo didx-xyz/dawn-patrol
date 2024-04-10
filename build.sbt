@@ -32,7 +32,7 @@ lazy val root = (project in file("."))
       "com.xebia"                      % "xef-pdf"                        % xefVersion,
       "com.xebia"                      % "xef-reasoning-jvm"              % xefVersion,
       "com.xebia"                      % "xef-openai"                     % xefVersion,
-      "ch.qos.logback"                 % "logback-classic"                % "1.5.3",
+      "ch.qos.logback"                 % "logback-classic"                % "1.5.4",
       "org.apache.logging.log4j"       % "log4j-core"                     % "2.23.1",
       "org.typelevel"                 %% "log4cats-slf4j"                 % "2.6.0",
       "co.fs2"                        %% "fs2-core"                       % "3.10.2",
