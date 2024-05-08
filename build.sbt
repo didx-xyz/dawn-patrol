@@ -36,7 +36,7 @@ lazy val root = (project in file("."))
       "org.apache.logging.log4j"       % "log4j-core"                     % "2.23.1",
       "org.typelevel"                 %% "log4cats-slf4j"                 % "2.7.0",
       "co.fs2"                        %% "fs2-core"                       % "3.10.2",
-      "org.typelevel"                 %% "munit-cats-effect"              % "2.0.0-M5" % "test"
+      "org.typelevel"                 %% "munit-cats-effect"              % "2.0.0-RC1" % "test"
     )
   )
 
