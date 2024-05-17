@@ -1,4 +1,4 @@
-scalaVersion := "3.4.1"
+scalaVersion := "3.4.2"
 
 lazy val circeVersion       = "0.14.7"
 lazy val pureconfigVersion  = "0.17.6"
