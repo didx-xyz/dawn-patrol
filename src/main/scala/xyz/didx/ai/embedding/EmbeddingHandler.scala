@@ -68,7 +68,7 @@ object EmbeddingHandler {
       .replaceAll("[^\\x00-\\x7F]", "") // emojis
       .replaceAll("""[!?&'"]""", "")    // punctuation
       .replaceAll(""" - """, " ")       // punctuation
-      .replaceAll("""\\s+""", " ") // extra whitespace
+      .replaceAll("""\\s+""", " ")      // extra whitespace
 
   def getAndStoreAll(opportunities: List[Opportunity]): Unit = {
     val textSegments: java.util.List[TextSegment] = opportunities

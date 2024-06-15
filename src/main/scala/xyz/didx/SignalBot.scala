@@ -121,7 +121,7 @@ case class SignalBot(backend: SttpBackend[IO, Any]):
 
   private def typingIndicatorTask(userNumber: String): fs2.Stream[IO, Unit] =
     // The typing indicator times out after ~15 seconds, so we will continue sending the typing indicator until complete
-    Stream.eval(sendTypingIndicator(userNumber).void) ++                                   // Send typing indicator immediately
+    Stream.eval(sendTypingIndicator(userNumber).void) ++ // Send typing indicator immediately
       Stream.awakeEvery[IO](10.seconds).evalMap(_ => sendTypingIndicator(userNumber).void) // And then every 10 seconds
 
   def startTyping(userNumber: String, taskRef: Ref[IO, Option[FiberIO[Unit]]]): IO[Unit] =
