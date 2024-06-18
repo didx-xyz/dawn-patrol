@@ -1,6 +1,6 @@
 scalaVersion := "3.4.2"
 
-lazy val circeVersion       = "0.14.7"
+lazy val circeVersion       = "0.14.8"
 lazy val pureconfigVersion  = "0.17.7"
 lazy val redis4CatsVersion  = "1.7.0"
 lazy val sttpClient3Version = "3.9.7"
