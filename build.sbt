@@ -25,7 +25,7 @@ lazy val root = (project in file("."))
       "com.softwaremill.sttp.client4" %% "core"                           % sttpClient4Version,
       "de.brendamour"                  % "jpasskit"                       % "0.4.2",
       "com.outr"                      %% "scribe"                         % "3.15.0",
-      "com.lihaoyi"                   %% "upickle"                        % "3.3.1",
+      "com.lihaoyi"                   %% "upickle"                        % "4.0.0",
       "dev.langchain4j"                % "langchain4j"                    % langchain4jVersion,
       "dev.langchain4j"                % "langchain4j-hugging-face"       % langchain4jVersion,
       "com.xebia"                     %% "xef-scala"                      % xefVersion,
