@@ -4,7 +4,7 @@ lazy val circeVersion       = "0.14.8"
 lazy val pureconfigVersion  = "0.17.7"
 lazy val redis4CatsVersion  = "1.7.1"
 lazy val sttpClient3Version = "3.9.7"
-lazy val sttpClient4Version = "4.0.0-M16"
+lazy val sttpClient4Version = "4.0.0-M20"
 lazy val langchain4jVersion = "0.30.0"
 lazy val xefVersion         = "0.0.3"
 
