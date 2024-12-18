@@ -3,5 +3,8 @@
   "files.trimFinalNewlines": true,
   "files.eol": "\n",
   "files.trimTrailingWhitespace": true,
-  "files.encoding": "utf8"
+  "files.encoding": "utf8",
+  "files.watcherExclude": {
+    "**/target": true
+  }
 }
