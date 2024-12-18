@@ -40,12 +40,12 @@ podLabels:
   admission.datadoghq.com/enabled: 'false'
 
 podSecurityContext:
-  fsGroup: 1000
+  fsGroup: 1001
 
 securityContext:
   # readOnlyRootFilesystem: true
   runAsNonRoot: true
-  runAsUser: 1000
+  runAsUser: 1001
   # capabilities:
   #   drop:
   #   - ALL

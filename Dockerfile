@@ -1,6 +1,6 @@
 FROM eclipse-temurin:21
 
-RUN adduser --system --group --uid 1000 --shell /bin/bash dawn
+RUN adduser --system --group --uid 1001 --shell /bin/bash dawn
 
 WORKDIR /app
 COPY --chown=0:0 ./target/dawn-patrol ./dawn-patrol
