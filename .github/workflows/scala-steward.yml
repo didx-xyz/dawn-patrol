@@ -1,4 +1,5 @@
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"
 
@@ -11,6 +12,8 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
     name: Launch Scala Steward
     steps:
+      - name: Setup SBT
+        uses: sbt/setup-sbt@v1
       - name: Launch Scala Steward
         uses: scala-steward-org/scala-steward-action@v2
         with:
